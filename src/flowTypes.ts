@@ -1,4 +1,4 @@
-import { FlowObjectProps, TemplateProps, Id, ConnectionProps, PinProps, PinnedObjectProps, ScriptNodeProps, JumpProps, DialogueFragmentProps, FlowFragmentProps, DialogueProps } from "ArticyJSON";
+import { FlowObjectProps, TemplateProps, Id, ConnectionProps, PinProps, PinnedObjectProps, ScriptNodeProps, JumpProps, DialogueFragmentProps, FlowFragmentProps, DialogueProps } from "./ArticyJSON";
 import { Database, RegisterDatabaseTypeClass } from "./database";
 import { ArticyCreatorArguments } from "./object";
 import { runScript } from "./script";

@@ -1,4 +1,4 @@
-import { LocationImageProps, LocationProps, TemplateProps, ZoneProps } from "ArticyJSON";
+import { LocationImageProps, LocationProps, TemplateProps, ZoneProps } from "./ArticyJSON";
 import { RegisterDatabaseTypeClass } from "./database";
 import { ArticyObject } from "./types";
 

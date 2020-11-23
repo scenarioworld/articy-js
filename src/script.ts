@@ -1,5 +1,5 @@
 import { AnyAction, Middleware } from "@reduxjs/toolkit";
-import { FeatureProps, ScriptMethodDef } from "ArticyJSON";
+import { FeatureProps, ScriptMethodDef } from "./ArticyJSON";
 import { Database } from "./database";
 import { BaseFlowNode } from "./flowTypes";
 import { AdvancedFlowState } from "./iterator";

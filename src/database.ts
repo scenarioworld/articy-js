@@ -1,4 +1,4 @@
-import { ArticyData, ArticyObjectProps, EnumDefinition, FlowFragmentProps, HierarchyEntry, Id, ModelData, TemplateProps } from "ArticyJSON";
+import { ArticyData, ArticyObjectProps, EnumDefinition, FlowFragmentProps, HierarchyEntry, Id, ModelData, TemplateProps } from "./ArticyJSON";
 import { v4 as uuidv4 } from "uuid";
 import { ArticyCreatorArguments, ArticyObjectCreator } from "./object";
 import { VerifyRegisteredScriptMethod } from "./script";

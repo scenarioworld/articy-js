@@ -1,4 +1,4 @@
-import { Id, ModelData } from "ArticyJSON";
+import { Id, ModelData } from "./ArticyJSON";
 import { Database } from "./database";
 
 /** Null ID */

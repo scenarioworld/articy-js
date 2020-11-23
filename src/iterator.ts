@@ -1,4 +1,4 @@
-import { ArticyObjectProps, Id } from "ArticyJSON";
+import { ArticyObjectProps, Id } from "./ArticyJSON";
 import { Database } from "./database";
 import { BaseFlowNode } from "./flowTypes";
 import { ArticyObjectCreator } from "./object";
