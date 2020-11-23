@@ -49,6 +49,10 @@ TODO: Document new type/template/feature/script function/etc. registration
 
 TODO: Document redux middleware
 
+## Asset Loading
+
+TODO: Stub asset loading
+
 ## Missing Features
 
 * Localization support
