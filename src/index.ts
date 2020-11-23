@@ -13,3 +13,5 @@ export {
   collectBranches, refreshBranches,
   NullAdvancedFlowState
 } from './iterator';
+
+export { runScript, RegisterScriptFunction, RegisterFeatureExecutionHandler, VerifyRegisteredScriptMethod, scriptDispatchMiddleware } from './script'
