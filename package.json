@@ -1,6 +1,12 @@
 {
   "version": "0.1.0",
   "license": "MIT",
+  "homepage": "https://github.com/brwarner/articy-node",
+  "bugs": "https://github.com/brwarner/articy-node/issues",
+  "repository": {
+    "url": "https://github.com/brwarner/articy-node",
+    "type": "git"
+  },
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
