@@ -16,6 +16,9 @@
   "engines": {
     "node": ">=10"
   },
+  "jest": {
+    "clearMocks": true
+  },
   "scripts": {
     "start": "tsdx watch",
     "build": "tsdx build",

@@ -15,7 +15,7 @@ type ScriptGenerator = Generator<AnyAction, Variable|void, undefined>;
 type ScriptFunctionInternal = (...args: Variable[]) => Variable|void;
 
 // Signature of script functions you can register. They must either return a value OR generate script reducers
-type ScriptFunction = (state: Readonly<ApplicationState>|undefined, db: Database, ...args: Variable[]) => Variable|void|ScriptGenerator;
+export type ScriptFunction = (state: Readonly<ApplicationState>|undefined, db: Database, ...args: Variable[]) => Variable|void|ScriptGenerator;
 
 // List of registered functions by name
 const registeredFunctions: Record<string, ScriptFunction> = { };
@@ -26,7 +26,7 @@ let state: Readonly<ApplicationState>|undefined = undefined;
 // Queued actions
 let actionQueue: AnyAction[]|undefined = undefined;
 
-function queueGeneratedReducers(generator: ScriptGenerator, shadowing: boolean): Variable|void {
+function queueGeneratedActions(generator: ScriptGenerator, shadowing: boolean): Variable|void {
     // Iterate the results
     let result = generator.next();
     while(!result.done) {
@@ -81,7 +81,7 @@ function wrapScriptFunction(func: ScriptFunction, state: Readonly<ApplicationSta
 
         // Check if the result is an iterator. If so, this is a generator.
         if(typeof returnValue === "object") {
-            return queueGeneratedReducers(returnValue, shadowing);
+            return queueGeneratedActions(returnValue, shadowing);
         }
 
         return returnValue;
@@ -96,6 +96,16 @@ function wrapScriptFunction(func: ScriptFunction, state: Readonly<ApplicationSta
 export function RegisterScriptFunction(name: string, func: ScriptFunction): void
 {
     registeredFunctions[name] = func;
+}
+
+/**
+ * Clears all registered functions
+ */
+export function ClearRegisteredScriptFunctions(): void 
+{
+    for(const key of Object.keys(registeredFunctions)) {
+        delete registeredFunctions[key];
+    }
 }
 
 /** Checks if a script method is properly registered. Logs an error if not. */
@@ -148,10 +158,18 @@ export function OnNodeExecution(node: BaseFlowNode, state: AdvancedFlowState): v
         for(const handler of handlers) {
             const returnValue = handler(node.db, feature, node, state);
             if(typeof returnValue === "object") {
-                queueGeneratedReducers(returnValue, false);
+                queueGeneratedActions(returnValue, false);
             }
         }
     }
+}
+
+/**
+ * Clears all registered feature handlers
+ */
+export function ClearRegisteredFeatureHandlers(): void 
+{
+    featureHandlers.clear();
 }
 
 /**
