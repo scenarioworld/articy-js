@@ -14,4 +14,7 @@ export {
   NullAdvancedFlowState
 } from './iterator';
 
-export { runScript, RegisterScriptFunction, RegisterFeatureExecutionHandler, VerifyRegisteredScriptMethod, scriptDispatchMiddleware } from './script'
+export { 
+  runScript, RegisterScriptFunction, RegisterFeatureExecutionHandler, VerifyRegisteredScriptMethod, scriptDispatchMiddleware,
+  ExtensionTypes
+} from './script'

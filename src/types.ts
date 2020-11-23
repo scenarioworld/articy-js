@@ -1,4 +1,4 @@
-import { ArticyObjectProps, AssetProps, EntityProps, Id, TemplateProps } from "./ArticyJSON";
+import { ArticyObjectProps, AssetProps, EntityProps, Id, TemplateProps } from "articy-node/json";
 import { Database, RegisterDatabaseTypeClass } from "./database";
 import { ArticyCreatorArguments, ArticyObjectCreator } from "./object";
 
