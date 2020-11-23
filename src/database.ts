@@ -5,7 +5,7 @@ import { VerifyRegisteredScriptMethod } from "./script";
 import { Variable, VariableNamespace, VariableStore } from "./variables";
 
 // Resolve an asset to a real path
-type ResolveAssetPath = (assetRef: string) => string;
+type ResolveAssetPath = (assetRef: string) => string|null|undefined;
 
 /** Database that contains all articy data loaded from a JSON file */
 export class Database
@@ -26,12 +26,12 @@ export class Database
     private readonly _hierarchy: Map<Id, HierarchyEntry> = new Map();
 
     /** Looks up asset files */
-    private readonly _assetResolver: ResolveAssetPath;
+    private readonly _assetResolver?: ResolveAssetPath;
 
     /** Unique database instance ID */
     public readonly guid: string;
 
-    constructor(data: ArticyData, assetResolver: ResolveAssetPath) {
+    constructor(data: ArticyData, assetResolver?: ResolveAssetPath) {
         // Store articy database
         this.guid = uuidv4();
         this._data = data;
@@ -364,11 +364,11 @@ export class Database
      * @param assetRef Asset Reference
      */
     public resolveAssetFilename(assetRef: string|undefined): string|null {
-        if(!assetRef) {
+        if(!assetRef || !this._assetResolver) {
             return null;
         }
 
-        return this._assetResolver(assetRef);
+        return this._assetResolver(assetRef) ?? null;
     }
 
     /**
