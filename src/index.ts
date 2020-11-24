@@ -1,8 +1,9 @@
-export { NullId } from './object';
+export { NullId, ArticyObjectCreator } from './object';
 export { Database, RegisterDatabaseTypeClass } from './database';
 
 export { ArticyObject, Entity, Asset } from './types';
 export {
+  BaseFlowNode,
   InputPin,
   OutputPin,
   Dialogue,
@@ -29,6 +30,7 @@ export {
   collectBranches,
   refreshBranches,
   NullAdvancedFlowState,
+  CustomStopType,
 } from './iterator';
 
 export {
@@ -36,7 +38,7 @@ export {
   RegisterScriptFunction,
   RegisterFeatureExecutionHandler,
   VerifyRegisteredScriptMethod,
-  scriptDispatchMiddleware,
+  createScriptDispatchMiddleware,
   ExtensionTypes,
 } from './script';
 

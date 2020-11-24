@@ -1,4 +1,8 @@
-import { AnyAction, Middleware } from '@reduxjs/toolkit';
+import {
+  ActionCreatorWithPayload,
+  AnyAction,
+  Middleware,
+} from '@reduxjs/toolkit';
 import { FeatureProps, ScriptMethodDef } from './json';
 import { Database } from './database';
 import { BaseFlowNode } from './flowTypes';
@@ -56,7 +60,10 @@ function queueGeneratedActions(
 /**
  * Gives articy script function handlers access to the Redux store and the ability to return Redux actions to queue
  */
-export const scriptDispatchMiddleware: Middleware = storeApi => next => action => {
+type createMiddlewareFunction = (
+  finalizeAction?: ActionCreatorWithPayload<AnyAction>
+) => Middleware;
+export const createScriptDispatchMiddleware: createMiddlewareFunction = finalizeAction => storeApi => next => action => {
   // Prime us to queue
   let queue: AnyAction[] = [];
   actionQueue = queue;
@@ -74,6 +81,11 @@ export const scriptDispatchMiddleware: Middleware = storeApi => next => action =
   // Dispatch appropriate actions
   for (const action of queue) {
     storeApi.dispatch(action);
+  }
+
+  // If we dispatched anything, then dispatch a finalize action
+  if (queue.length > 0 && finalizeAction) {
+    storeApi.dispatch(finalizeAction(action));
   }
 
   // Return result

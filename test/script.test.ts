@@ -5,7 +5,7 @@ import {
   ClearRegisteredScriptFunctions,
   RegisterScriptFunction,
   runScript,
-  scriptDispatchMiddleware,
+  createScriptDispatchMiddleware,
   ScriptFunction,
 } from '../src/script';
 
@@ -111,7 +111,7 @@ describe('Script middleware', () => {
     });
 
     // dispatch action through the middleware
-    scriptDispatchMiddleware({ dispatch, getState })(executeScript)('');
+    createScriptDispatchMiddleware()({ dispatch, getState })(executeScript)('');
 
     // Check that both subactions were dispatched
     expect(dispatch.mock.calls).toHaveLength(2);

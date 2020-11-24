@@ -212,7 +212,7 @@ export interface DialogueFragmentProps
 }
 
 /** Base export interface for all feature data */
-export type FeatureProps = Record<string, unknown>;
+export type FeatureProps = {};
 
 /** Properties for a template */
 export interface TemplateProps {
