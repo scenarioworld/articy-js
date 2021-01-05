@@ -13,7 +13,7 @@ import {
 } from './json';
 import { Database, ArticyType } from './database';
 import { ArticyCreatorArguments } from './object';
-import { runScript } from './script';
+import { RegisterScriptFunction, runScript } from './script';
 import { ArticyObject, Entity } from './types';
 import { VariableStore } from './variables';
 import { VisitSet } from './iterator';
@@ -481,3 +481,29 @@ export class FlowFragment<
 export class Dialogue<
   TemplateType extends TemplateProps = TemplateProps
 > extends BaseFragment<DialogueProps, TemplateType> {}
+
+// once() method -> returns true only if the calling node has not been visted before
+RegisterScriptFunction('once', context => {
+  return (
+    !(context.caller in context.visits.counts) ||
+    context.visits.counts[context.caller] === 0
+  );
+});
+
+// limit(number) method -> returns true only if the current node has been visited less than `number` times
+RegisterScriptFunction('limit', (context, max) => {
+  // Make sure it's actually a number
+  if (typeof max !== 'number') {
+    return false;
+  }
+
+  // Check visit count
+  const count = context.visits.counts[context.caller];
+  if (count === undefined && max === 0) {
+    return false;
+  }
+  if (count === undefined || count < max) {
+    return true;
+  }
+  return false;
+});
