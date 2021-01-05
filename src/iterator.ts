@@ -442,10 +442,6 @@ export function advancedNextFlowState(
   return [refreshBranches(db, newFlowState, config), curr];
 }
 
-interface Visit_Limitation {
-  Only_Once: boolean;
-}
-
 export function collectBranches(
   db: Database,
   iter: FlowState,
@@ -495,17 +491,6 @@ export function collectBranches(
     if (!node) {
       // No return since we didn't hit a valid end point
       return [];
-    }
-
-    // Check if this is a visit limited node
-    const limit_feature = node.template?.Visit_Limitation as
-      | Visit_Limitation
-      | undefined;
-    if (limit_feature && limit_feature.Only_Once) {
-      // Kill the branch if we've already been visited
-      if ((visits.counts[node.properties.Id] ?? 0) > 0) {
-        return [];
-      }
     }
 
     // Otherwise, add to our current branch
