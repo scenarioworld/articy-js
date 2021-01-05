@@ -1,5 +1,6 @@
 import { AnyAction } from '@reduxjs/toolkit';
 import { Database } from '../src/database';
+import { EmptyVisitSet } from '../src/iterator';
 import {
   ClearRegisteredFeatureHandlers,
   ClearRegisteredScriptFunctions,
@@ -29,19 +30,24 @@ describe('A simple function with no return value', () => {
   const db = ({} as unknown) as Database;
 
   test('Calling function in script calls the bound javascript function', () => {
-    runScript('func()', {}, db, false, false);
+    runScript('func()', {}, EmptyVisitSet, '', db, false, false);
     expect(func.mock.calls).toHaveLength(1);
   });
 
-  test('Active database is passed to function', () => {
-    runScript('func()', {}, db, false, false);
-    expect(func.mock.calls[0][1]).toBe(db);
+  test('Active context is passed to function', () => {
+    runScript('func()', {}, EmptyVisitSet, '', db, false, false);
+    expect(func.mock.calls[0][0]).toMatchObject({
+      db,
+      visits: EmptyVisitSet,
+      variables: {},
+      caller: '',
+    });
   });
 
   test('Arguments are forwarded from script to function', () => {
-    runScript('func(4, "test")', {}, db, false, false);
-    expect(func.mock.calls[0][2]).toBe(4);
-    expect(func.mock.calls[0][3]).toBe('test');
+    runScript('func(4, "test")', {}, EmptyVisitSet, '', db, false, false);
+    expect(func.mock.calls[0][1]).toBe(4);
+    expect(func.mock.calls[0][2]).toBe('test');
   });
 });
 
@@ -58,12 +64,12 @@ describe('A simple function that returns true', () => {
   const db = ({} as unknown) as Database;
 
   test('Script result should be true', () => {
-    const result = runScript('func()', {}, db, true, false);
+    const result = runScript('func()', {}, EmptyVisitSet, '', db, true, false);
     expect(result).toBe(true);
   });
 
   test('Inverted script result should be true', () => {
-    const result = runScript('!func()', {}, db, true, false);
+    const result = runScript('!func()', {}, EmptyVisitSet, '', db, true, false);
     expect(result).toBe(false);
   });
 });
@@ -77,7 +83,15 @@ describe('A script environment with a single variable MyNamespace.Variable', () 
   beforeEach(() => (vars.MyNamespace.Variable = 45));
 
   test('Script can change variable', () => {
-    runScript('MyNamespace.Variable = 22', vars, db, false, false);
+    runScript(
+      'MyNamespace.Variable = 22',
+      vars,
+      EmptyVisitSet,
+      '',
+      db,
+      false,
+      false
+    );
     expect(vars.MyNamespace.Variable).toBe(22);
   });
 
@@ -85,6 +99,8 @@ describe('A script environment with a single variable MyNamespace.Variable', () 
     const result = runScript(
       'MyNamespace.Variable < 44',
       vars,
+      EmptyVisitSet,
+      '',
       db,
       true,
       false
@@ -98,7 +114,7 @@ describe('Script middleware', () => {
   const db = ({} as unknown) as Database;
 
   const executeScript = <T extends AnyAction>(action: T) => {
-    runScript('func()', {}, db, false, false);
+    runScript('func()', {}, EmptyVisitSet, '', db, false, false);
     return action;
   };
   const dispatch = jest.fn(<T extends AnyAction>(action: T) => action);

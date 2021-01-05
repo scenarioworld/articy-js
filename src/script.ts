@@ -3,16 +3,34 @@ import {
   AnyAction,
   Middleware,
 } from '@reduxjs/toolkit';
-import { FeatureProps, ScriptMethodDef } from './json';
+import { FeatureProps, Id, ScriptMethodDef } from './json';
 import { Database } from './database';
 import { BaseFlowNode } from './flowTypes';
-import { AdvancedFlowState } from './iterator';
+import { AdvancedFlowState, VisitSet } from './iterator';
 import { Variable, VariableStore } from './variables';
 
 export interface ExtensionTypes {}
 type ApplicationState = ExtensionTypes extends { ApplicationState: unknown }
   ? ExtensionTypes['ApplicationState']
   : unknown;
+
+// Context passed as the first argument to every script method
+type Context = {
+  /** Id of the caller (or @see NullId if called outside a node) */
+  caller: Id;
+
+  /** Visit information */
+  visits: VisitSet;
+
+  /** Variable state */
+  variables: VariableStore;
+
+  /** Database */
+  db: Database;
+
+  /** Custom application state */
+  state: Readonly<ApplicationState> | undefined;
+};
 
 // Generator which queues script reducers until finally returning a variable value
 type ScriptGenerator = Generator<AnyAction, Variable | void, undefined>;
@@ -22,8 +40,7 @@ type ScriptFunctionInternal = (...args: Variable[]) => Variable | void;
 
 // Signature of script functions you can register. They must either return a value OR generate script reducers
 export type ScriptFunction = (
-  state: Readonly<ApplicationState> | undefined,
-  db: Database,
+  context: Context,
   ...args: Variable[]
 ) => Variable | void | ScriptGenerator;
 
@@ -96,13 +113,12 @@ export const createScriptDispatchMiddleware: createMiddlewareFunction = finalize
 // Automatically handles the function potentially returning reducers to be queued at the end of the state update.
 function wrapScriptFunction(
   func: ScriptFunction,
-  state: Readonly<ApplicationState> | undefined,
-  db: Database,
+  context: Context,
   shadowing: boolean
 ): ScriptFunctionInternal {
   return (...args) => {
     // Execute the underlying method
-    const returnValue = func(state, db, ...args);
+    const returnValue = func(context, ...args);
 
     // Check if the result is an iterator. If so, this is a generator.
     if (typeof returnValue === 'object') {
@@ -212,12 +228,16 @@ export function ClearRegisteredFeatureHandlers(): void {
  * Runs a condition or instruction script
  * @param script Script to run
  * @param variables Global variable store
+ * @param visits Visit set information
+ * @param caller Id of the node calling this function
  * @param db Database
  * @param returns Is this script expected to return a boolean?
  */
 export function runScript(
   script: string | undefined,
   variables: VariableStore,
+  visits: VisitSet,
+  caller: Id,
   db: Database,
   returns: boolean,
   shadowing: boolean
@@ -242,13 +262,22 @@ export function runScript(
     `"use strict"; ${returns ? 'return' : ''} ${script}`
   );
 
+  // Create game context object
+  const context: Context = {
+    caller,
+    db,
+    variables,
+    visits,
+    state,
+  };
+
   // Call the function with the variable sets
   const result = func.call(
     undefined,
     undefined,
     ...names.map(n => variables[n]),
     ...funcNames.map(f =>
-      wrapScriptFunction(registeredFunctions[f], state, db, shadowing)
+      wrapScriptFunction(registeredFunctions[f], context, shadowing)
     )
   );
 

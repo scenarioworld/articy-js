@@ -28,6 +28,9 @@ export interface VisitSet {
   indicies: VisitIndicies;
 }
 
+/** Empty @see VisitSet */
+export const EmptyVisitSet: VisitSet = { counts: {}, indicies: {} };
+
 /**
  * Represents a basic iterator in the flow.
  */
@@ -162,7 +165,7 @@ export const NullAdvancedFlowState: AdvancedFlowState = {
   id: null,
   last: null,
   variables: {},
-  visits: { counts: {}, indicies: {} },
+  visits: EmptyVisitSet,
   branches: [],
   turn: 0,
 };
@@ -216,6 +219,7 @@ export interface AdvancedIterationConfig {
 export function getFlowStateChildren(
   db: Database,
   state: FlowState,
+  visits: VisitSet = EmptyVisitSet,
   node?: BaseFlowNode
 ): BaseFlowNode[] {
   if (!state.id) {
@@ -231,13 +235,13 @@ export function getFlowStateChildren(
   // Grab children
   const children: BaseFlowNode[] = [];
   const numChildren = node.numBranches(
-    state.variables,
+    { variables: state.variables, visits },
     state.last,
     state.shadowing ?? false
   );
   for (let i = 0; i < numChildren; i++) {
     const child = node.next(
-      state.variables,
+      { variables: state.variables, visits },
       i,
       state.last,
       state.shadowing ?? false
@@ -263,7 +267,8 @@ type AdvancedIterationResult = [AdvancedFlowState, BaseFlowNode | undefined];
 export function basicNextFlowState(
   db: Database,
   state: FlowState,
-  branchIndex: number
+  branchIndex: number,
+  visits: VisitSet = EmptyVisitSet
 ): BasicFlowIterationResult {
   // Nowhere to go. We have no ID.
   if (!state.id) {
@@ -275,7 +280,7 @@ export function basicNextFlowState(
 
   // Find the next node
   const next = node?.next(
-    state.variables,
+    { variables: state.variables, visits },
     branchIndex,
     state.last,
     state.shadowing ?? false
@@ -328,7 +333,7 @@ export function advancedStartupFlowState(
     last: null,
     branches: [],
     variables: db.newVariableStore(),
-    visits: { counts: {}, indicies: {} },
+    visits: EmptyVisitSet,
     turn: 0,
   };
   initial = refreshBranches(db, initial, config);
@@ -392,7 +397,7 @@ export function advancedNextFlowState(
     }
 
     // Execute node
-    step.execute(vars);
+    step.execute({ variables: vars, visits: visits });
 
     // Call any registered handlers
     // TODO: Do we need to pass a more up to date state??
@@ -469,7 +474,7 @@ export function collectBranches(
 
   // Get number of branches
   let branches = node.numBranches(
-    iter.variables,
+    { variables: iter.variables, visits },
     iter.last,
     iter.shadowing ?? false
   );
@@ -483,7 +488,7 @@ export function collectBranches(
     }
 
     // Move to that child
-    [iter, node] = basicNextFlowState(db, iter, direction);
+    [iter, node] = basicNextFlowState(db, iter, direction, visits);
     direction = -1;
 
     // If no node exists, this is a dead end
@@ -551,7 +556,7 @@ export function collectBranches(
 
     // Continue
     branches = node.numBranches(
-      iter.variables,
+      { variables: iter.variables, visits },
       iter.last,
       iter.shadowing ?? false
     );

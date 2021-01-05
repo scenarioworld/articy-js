@@ -16,6 +16,12 @@ import { ArticyCreatorArguments } from './object';
 import { runScript } from './script';
 import { ArticyObject, Entity } from './types';
 import { VariableStore } from './variables';
+import { VisitSet } from './iterator';
+
+export type ExecuteContext = {
+  variables: VariableStore;
+  visits: VisitSet;
+};
 
 /**
  * Base class for all flow nodes
@@ -30,7 +36,7 @@ export class BaseFlowNode<
    * @param last Id of the node we were at least (or null if none)
    */
   next(
-    _vars: VariableStore,
+    _context: ExecuteContext,
     _branchIndex: number,
     _last: Id | null,
     _shadowing: boolean
@@ -43,7 +49,7 @@ export class BaseFlowNode<
    * @param last Id of the node we were at least (or null if none)
    */
   numBranches(
-    _vars: VariableStore,
+    _context: ExecuteContext,
     _last: Id | null,
     _shadowing: boolean
   ): number {
@@ -60,7 +66,7 @@ export class BaseFlowNode<
   /**
    * Executes scripts on the node (should do the same as next without the iteration advancement)
    */
-  execute(_vars: VariableStore): void {
+  execute(_context: ExecuteContext): void {
     // do nothing
   }
 }
@@ -123,13 +129,21 @@ export class BasePin extends BaseFlowNode<PinProps> {
 @ArticyType('OutputPin')
 export class OutputPin extends BasePin {
   next(
-    vars: VariableStore,
+    context: ExecuteContext,
     branchIndex: number,
     _last: Id | null,
     shadowing: boolean
   ): BaseFlowNode | undefined {
     // Evaluate instructions
-    runScript(this.properties.Text, vars, this.db, false, shadowing);
+    runScript(
+      this.properties.Text,
+      context.variables,
+      context.visits,
+      this.id,
+      this.db,
+      false,
+      shadowing
+    );
 
     // Return the appropriate connection
     return nextFromConnections(this.db, branchIndex, this.connections());
@@ -143,8 +157,16 @@ export class OutputPin extends BasePin {
     return this.properties.Text.length > 0;
   }
 
-  execute(vars: VariableStore): void {
-    runScript(this.properties.Text, vars, this.db, false, false);
+  execute(context: ExecuteContext): void {
+    runScript(
+      this.properties.Text,
+      context.variables,
+      context.visits,
+      this.id,
+      this.db,
+      false,
+      false
+    );
   }
 }
 
@@ -158,12 +180,22 @@ export class InputPin extends BasePin {
   }
 
   numBranches(
-    vars: VariableStore,
+    context: ExecuteContext,
     _last: Id | null,
     shadowing: boolean
   ): number {
     // No branches if the script fails. Dead end.
-    if (!runScript(this.properties.Text, vars, this.db, true, shadowing)) {
+    if (
+      !runScript(
+        this.properties.Text,
+        context.variables,
+        context.visits,
+        this.id,
+        this.db,
+        true,
+        shadowing
+      )
+    ) {
       return 0;
     }
 
@@ -232,7 +264,7 @@ export class Hub extends BasePinnedObject {
 @ArticyType('Condition')
 export class Condition extends BasePinnedObject<ScriptNodeProps> {
   next(
-    vars: VariableStore,
+    context: ExecuteContext,
     _branchIndex: number,
     _last: Id | null,
     shadowing: boolean
@@ -240,7 +272,9 @@ export class Condition extends BasePinnedObject<ScriptNodeProps> {
     // Return 0 or 1 based on a script
     const result = runScript(
       this.properties.Expression,
-      vars,
+      context.variables,
+      context.visits,
+      this.id,
       this.db,
       true,
       shadowing
@@ -260,13 +294,21 @@ export class Condition extends BasePinnedObject<ScriptNodeProps> {
 @ArticyType('Instruction')
 export class Instruction extends BasePinnedObject<ScriptNodeProps> {
   next(
-    vars: VariableStore,
+    context: ExecuteContext,
     _branchIndex: number,
     _last: Id | null,
     shadowing: boolean
   ): BaseFlowNode | undefined {
     // Run script
-    runScript(this.properties.Expression, vars, this.db, false, shadowing);
+    runScript(
+      this.properties.Expression,
+      context.variables,
+      context.visits,
+      this.id,
+      this.db,
+      false,
+      shadowing
+    );
 
     // Go to first pin
     return this.OutputPins[0];
@@ -281,8 +323,16 @@ export class Instruction extends BasePinnedObject<ScriptNodeProps> {
     return this.properties.Expression.length > 0;
   }
 
-  execute(vars: VariableStore): void {
-    runScript(this.properties.Expression, vars, this.db, false, false);
+  execute(context: ExecuteContext): void {
+    runScript(
+      this.properties.Expression,
+      context.variables,
+      context.visits,
+      this.id,
+      this.db,
+      false,
+      false
+    );
   }
 }
 
@@ -352,7 +402,7 @@ export class BaseFragment<
   TemplateType extends TemplateProps
 > extends BasePinnedObject<PropertiesType, TemplateType> {
   next(
-    _vars: VariableStore,
+    _context: ExecuteContext,
     branchIndex: number,
     last: Id
   ): BaseFlowNode | undefined {
@@ -387,7 +437,7 @@ export class BaseFragment<
     );
   }
 
-  numBranches(_vars: VariableStore, last: Id | null): number {
+  numBranches(_context: ExecuteContext, last: Id | null): number {
     if (this.InputPins.length === 0) {
       return 0;
     }
