@@ -5,7 +5,7 @@ import {
   Id,
   TemplateProps,
 } from './json';
-import { Database, RegisterDatabaseTypeClass } from './database';
+import { Database, ArticyType } from './database';
 import { ArticyCreatorArguments, ArticyObjectCreator } from './object';
 
 /**
@@ -73,6 +73,7 @@ export class ArticyObject<
 /**
  * Base class to all entities
  */
+@ArticyType('Entity')
 export class Entity<
   PropertiesType extends EntityProps = EntityProps
 > extends ArticyObject<PropertiesType> {
@@ -83,11 +84,11 @@ export class Entity<
         return this.db.getAssetFilename(this.properties.PreviewImage.Asset);
     }*/
 }
-RegisterDatabaseTypeClass('Entity', Entity);
 
 /**
  * Asset type. Includes images, sounds, etc. stored in Articy.
  */
+@ArticyType('Asset')
 export class Asset extends ArticyObject<AssetProps> {
   /** Asset reference id. Used to lookup the resolved filename. */
   public readonly AssetRef: string | null;
@@ -103,4 +104,3 @@ export class Asset extends ArticyObject<AssetProps> {
     this.Filename = args.db.resolveAssetFilename(this.AssetRef);
   }
 }
-RegisterDatabaseTypeClass('Asset', Asset);

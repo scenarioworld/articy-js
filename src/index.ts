@@ -1,5 +1,5 @@
 export { NullId, ArticyObjectCreator } from './object';
-export { Database, RegisterDatabaseTypeClass } from './database';
+export { Database, RegisterDatabaseTypeClass, ArticyType } from './database';
 
 export { ArticyObject, Entity, Asset } from './types';
 export {

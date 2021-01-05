@@ -427,3 +427,13 @@ export function RegisterDatabaseTypeClass<ObjectType>(
   Database.RegisteredTypes.set(name, creator as ArticyObjectCreator);
   Database.InverseRegisteredTypes.set(creator as ArticyObjectCreator, name);
 }
+
+/**
+ * Decorator alternative to @see RegisterDatabaseTypeClass
+ * Add on top of classes you want to register as Articy Database Types
+ * @param name Type name (must match the Template's Technical Name or Class Name in Articy)
+ */
+export function ArticyType(name: string) {
+  return (constructor: ArticyObjectCreator) =>
+    RegisterDatabaseTypeClass(name, constructor);
+}

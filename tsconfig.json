@@ -34,5 +34,7 @@
     "noEmit": true,
     // support map iteration
     "downlevelIteration": true,
+    // decorator support
+    "experimentalDecorators": true,
   }
 }

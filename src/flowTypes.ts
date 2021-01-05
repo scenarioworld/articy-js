@@ -11,7 +11,7 @@ import {
   FlowFragmentProps,
   DialogueProps,
 } from './json';
-import { Database, RegisterDatabaseTypeClass } from './database';
+import { Database, ArticyType } from './database';
 import { ArticyCreatorArguments } from './object';
 import { runScript } from './script';
 import { ArticyObject, Entity } from './types';
@@ -120,6 +120,7 @@ export class BasePin extends BaseFlowNode<PinProps> {
 /**
  * An output pin with an optional script
  */
+@ArticyType('OutputPin')
 export class OutputPin extends BasePin {
   next(
     vars: VariableStore,
@@ -147,11 +148,10 @@ export class OutputPin extends BasePin {
   }
 }
 
-RegisterDatabaseTypeClass('OutputPin', OutputPin);
-
 /**
  * An input pin with an optional condition
  */
+@ArticyType('InputPin')
 export class InputPin extends BasePin {
   next(): BaseFlowNode | undefined {
     return this.db.getObject(this.properties.Owner, BaseFlowNode);
@@ -171,8 +171,6 @@ export class InputPin extends BasePin {
     return 1;
   }
 }
-
-RegisterDatabaseTypeClass('InputPin', InputPin);
 
 /**
  * Base class for all flow nodes that have input and output pins
@@ -208,6 +206,7 @@ export class BasePinnedObject<
 /**
  * Base Hub class
  */
+@ArticyType('Hub')
 export class Hub extends BasePinnedObject {
   next(): BaseFlowNode | undefined {
     if (this.OutputPins.length === 0) {
@@ -227,11 +226,10 @@ export class Hub extends BasePinnedObject {
   }
 }
 
-RegisterDatabaseTypeClass('Hub', Hub);
-
 /**
  * Conditions that choose either their first or second output pin depending on the result of a condition script
  */
+@ArticyType('Condition')
 export class Condition extends BasePinnedObject<ScriptNodeProps> {
   next(
     vars: VariableStore,
@@ -256,11 +254,10 @@ export class Condition extends BasePinnedObject<ScriptNodeProps> {
   }
 }
 
-RegisterDatabaseTypeClass('Condition', Condition);
-
 /**
  * Instruction that runs a script before moving onto the next node
  */
+@ArticyType('Instruction')
 export class Instruction extends BasePinnedObject<ScriptNodeProps> {
   next(
     vars: VariableStore,
@@ -289,11 +286,10 @@ export class Instruction extends BasePinnedObject<ScriptNodeProps> {
   }
 }
 
-RegisterDatabaseTypeClass('Instruction', Instruction);
-
 /**
  * Jumps to a destination node by reference
  */
+@ArticyType('Jump')
 export class Jump<
   TemplateType extends TemplateProps = TemplateProps
 > extends BasePinnedObject<JumpProps, TemplateType> {
@@ -316,11 +312,10 @@ export class Jump<
   public TargetPin: InputPin | undefined;
 }
 
-RegisterDatabaseTypeClass('Jump', Jump);
-
 /**
  * Fragment of dialogue spoken by an entity
  */
+@ArticyType('DialogueFragment')
 export class DialogueFragment<
   TemplateType extends TemplateProps = TemplateProps
 > extends BasePinnedObject<DialogueFragmentProps, TemplateType> {
@@ -348,8 +343,6 @@ export class DialogueFragment<
 
   public readonly Speaker: Entity | undefined;
 }
-
-RegisterDatabaseTypeClass('DialogueFragment', DialogueFragment);
 
 /**
  * Base class for all fragments with children
@@ -426,15 +419,15 @@ export class BaseFragment<
 /**
  * Flow fragment with attachments, text, and children
  */
+@ArticyType('FlowFragment')
 export class FlowFragment<
   TemplateType extends TemplateProps = TemplateProps
 > extends BaseFragment<FlowFragmentProps, TemplateType> {}
-RegisterDatabaseTypeClass('FlowFragment', FlowFragment);
 
 /**
  * Dialogue node with attachments, text, and children
  */
+@ArticyType('Dialogue')
 export class Dialogue<
   TemplateType extends TemplateProps = TemplateProps
 > extends BaseFragment<DialogueProps, TemplateType> {}
-RegisterDatabaseTypeClass('Dialogue', Dialogue);
