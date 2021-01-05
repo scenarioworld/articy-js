@@ -18,18 +18,18 @@ export { Location, Zone, LocationImage } from './locationTypes';
 export { Variable, VariableNamespace, VariableStore } from './variables';
 export {
   FlowBranch,
-  FlowState,
-  AdvancedFlowState,
-  AdvancedIterationConfig,
+  SimpleFlowState,
+  GameFlowState,
+  GameIterationConfig,
   VisitCounts,
   VisitIndicies,
   VisitSet,
   basicNextFlowState,
-  advancedStartupFlowState,
-  advancedNextFlowState,
+  startupGameFlowState,
+  advanceGameFlowState,
   collectBranches,
   refreshBranches,
-  NullAdvancedFlowState,
+  NullGameFlowState,
   CustomStopType,
 } from './iterator';
 

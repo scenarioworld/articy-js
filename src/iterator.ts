@@ -34,7 +34,7 @@ export const EmptyVisitSet: VisitSet = { counts: {}, indicies: {} };
 /**
  * Represents a basic iterator in the flow.
  */
-export interface FlowState {
+export interface SimpleFlowState {
   id: Id | null;
   last: Id | null;
   variables: VariableStore;
@@ -139,9 +139,9 @@ export class FlowBranch {
 }
 
 /**
- * Advanced flow iterator. Contains not just a current position in the flow but a visit set and current branches
+ * Full game flow iterator. Contains not just a current position in the flow but a visit set and current branches
  */
-export interface AdvancedFlowState extends FlowState {
+export interface GameFlowState extends SimpleFlowState {
   /**
    * Cache of branches available at this juncture
    */
@@ -159,9 +159,9 @@ export interface AdvancedFlowState extends FlowState {
 }
 
 /**
- * Empty advanced flow iterator. Use this to begin iteration.
+ * Empty game flow iterator. Use this to initialize your game state
  */
-export const NullAdvancedFlowState: AdvancedFlowState = {
+export const NullGameFlowState: GameFlowState = {
   id: null,
   last: null,
   variables: {},
@@ -192,9 +192,9 @@ export enum CustomStopType {
 }
 
 /**
- * Configuration for advanced flow state iteration
+ * Configuration for game flow state iteration
  */
-export interface AdvancedIterationConfig {
+export interface GameIterationConfig {
   /**
    * These node types are considered "terminal".
    * Iteration will stop at them and return a new branch.
@@ -218,7 +218,7 @@ export interface AdvancedIterationConfig {
  */
 export function getFlowStateChildren(
   db: Database,
-  state: FlowState,
+  state: SimpleFlowState,
   visits: VisitSet = EmptyVisitSet,
   node?: BaseFlowNode
 ): BaseFlowNode[] {
@@ -254,8 +254,8 @@ export function getFlowStateChildren(
   return children;
 }
 
-type BasicFlowIterationResult = [FlowState, BaseFlowNode | undefined];
-type AdvancedIterationResult = [AdvancedFlowState, BaseFlowNode | undefined];
+type BasicFlowIterationResult = [SimpleFlowState, BaseFlowNode | undefined];
+type GameIterationResult = [GameFlowState, BaseFlowNode | undefined];
 
 /**
  * Advances a flow state one node down a branch.
@@ -266,7 +266,7 @@ type AdvancedIterationResult = [AdvancedFlowState, BaseFlowNode | undefined];
  */
 export function basicNextFlowState(
   db: Database,
-  state: FlowState,
+  state: SimpleFlowState,
   branchIndex: number,
   visits: VisitSet = EmptyVisitSet
 ): BasicFlowIterationResult {
@@ -322,13 +322,13 @@ function shouldStopAt(
  * @param start Starting ID
  * @param config Advancement options
  */
-export function advancedStartupFlowState(
+export function startupGameFlowState(
   db: Database,
   start: Id,
-  config: AdvancedIterationConfig
-): AdvancedIterationResult {
+  config: GameIterationConfig
+): GameIterationResult {
   // Create initial state
-  let initial: AdvancedFlowState = {
+  let initial: GameFlowState = {
     id: start,
     last: null,
     branches: [],
@@ -341,7 +341,7 @@ export function advancedStartupFlowState(
   // Get start node
   const node = db.getObject(start, BaseFlowNode);
   if (!node) {
-    return [NullAdvancedFlowState, undefined];
+    return [NullGameFlowState, undefined];
   }
 
   // Check if it's a valid starting point
@@ -350,7 +350,7 @@ export function advancedStartupFlowState(
   }
 
   // Otherwise, advance
-  return advancedNextFlowState(db, initial, config, 0);
+  return advanceGameFlowState(db, initial, config, 0);
 }
 
 /**
@@ -358,14 +358,14 @@ export function advancedStartupFlowState(
  * @param db Database
  * @param state Current flow state
  * @param branchIndex Branch index to follow
- * @returns A new advanced flow state with a list of available branches. Also returns the current node to avoid unncessary lookups.
+ * @returns A new game flow state with a list of available branches. Also returns the current node to avoid unncessary lookups.
  */
-export function advancedNextFlowState(
+export function advanceGameFlowState(
   db: Database,
-  state: AdvancedFlowState,
-  config: AdvancedIterationConfig,
+  state: GameFlowState,
+  config: GameIterationConfig,
   branchIndex: number
-): AdvancedIterationResult {
+): GameIterationResult {
   // Check if its in bounds
   if (branchIndex < 0 || branchIndex >= state.branches.length) {
     return [state, undefined];
@@ -444,8 +444,8 @@ export function advancedNextFlowState(
 
 export function collectBranches(
   db: Database,
-  iter: FlowState,
-  config: AdvancedIterationConfig,
+  iter: SimpleFlowState,
+  config: GameIterationConfig,
   visits: VisitSet,
   branch?: FlowBranch,
   index = 0,
@@ -573,16 +573,16 @@ function cloneVariableStore(vars: VariableStore): VariableStore {
 }
 
 /**
- * Updates the available branches in an advanced flow state
+ * Updates the available branches in a game flow state
  * @param db Database
- * @param state Advanced flow state
- * @param config Advanced iteration config settings
+ * @param state Game flow state
+ * @param config Game iteration config settings
  */
 export function refreshBranches(
   db: Database,
-  state: AdvancedFlowState,
-  config: AdvancedIterationConfig
-): AdvancedFlowState {
+  state: GameFlowState,
+  config: GameIterationConfig
+): GameFlowState {
   const result = { ...state };
   const vars = state.variables;
   result.branches = collectBranches(

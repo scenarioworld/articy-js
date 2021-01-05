@@ -6,7 +6,7 @@ import {
 import { FeatureProps, Id, ScriptMethodDef } from './json';
 import { Database } from './database';
 import { BaseFlowNode } from './flowTypes';
-import { AdvancedFlowState, VisitSet } from './iterator';
+import { GameFlowState, VisitSet } from './iterator';
 import { Variable, VariableStore } from './variables';
 
 export interface ExtensionTypes {}
@@ -166,7 +166,7 @@ type FeatureExecutionHandler<Feature extends FeatureProps = FeatureProps> = (
   db: Database,
   feature: Feature,
   node: BaseFlowNode,
-  state: AdvancedFlowState
+  state: GameFlowState
 ) => Variable | void | ScriptGenerator;
 const featureHandlers: Map<string, FeatureExecutionHandler[]> = new Map();
 
@@ -192,7 +192,7 @@ export function RegisterFeatureExecutionHandler<Feature extends FeatureProps>(
  */
 export function OnNodeExecution(
   node: BaseFlowNode,
-  state: AdvancedFlowState
+  state: GameFlowState
 ): void {
   if (!node.template) {
     return;
