@@ -11,7 +11,7 @@ import {
   FlowFragmentProps,
   DialogueProps,
 } from './json';
-import { Database, ArticyType } from './database';
+import { Database, ArticyType, RegisterDatabaseTypeClass } from './database';
 import { ArticyCreatorArguments } from './object';
 import { RegisterScriptFunction, runScript } from './script';
 import { ArticyObject, Entity } from './types';
@@ -339,7 +339,6 @@ export class Instruction extends BasePinnedObject<ScriptNodeProps> {
 /**
  * Jumps to a destination node by reference
  */
-@ArticyType('Jump')
 export class Jump<
   TemplateType extends TemplateProps = TemplateProps
 > extends BasePinnedObject<JumpProps, TemplateType> {
@@ -361,6 +360,7 @@ export class Jump<
 
   public TargetPin: InputPin | undefined;
 }
+RegisterDatabaseTypeClass('Jump', Jump);
 
 /**
  * Fragment of dialogue spoken by an entity
