@@ -151,23 +151,28 @@ export class Database {
   /**
    * Quick object type check
    * @param id Object ID
-   * @param creator Type to check against
+   * @param type Type to check against
    */
-  public isOfType(id: Id, creator: ArticyObjectCreator): boolean {
+  public isOfType(id: Id, type: ArticyObjectCreator | string): boolean {
     // Get def
     const def = this._lookup.get(id);
     if (!def) {
       return false;
     }
 
-    // Check if it maps to this creator
-    if (this.getCreator(def.Type) === creator) {
+    // If we're testing against a string
+    if (typeof type === 'string') {
+      return def.Type === type || this.isType(def.Type, type);
+    }
+
+    // Otherwise, check if the mapped creator matches
+    if (this.getCreator(def.Type) === type) {
       return true;
     }
 
-    // Check if it inherits from it
+    // The creator may not match, but it's possible that this is the base type of the creator
     if (
-      this.isType(def.Type, Database.InverseRegisteredTypes.get(creator) ?? '')
+      this.isType(def.Type, Database.InverseRegisteredTypes.get(type) ?? '')
     ) {
       return true;
     }

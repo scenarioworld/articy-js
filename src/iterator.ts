@@ -46,7 +46,20 @@ export interface SimpleFlowState {
 /**
  * Represents a branch in the flow.
  */
-export class FlowBranch {
+export interface FlowBranch {
+  /** Branch index. Pass this index to @see advanceGameFlowState to follow this branch */
+  index: number;
+
+  /** Path. Following this branch will move through all these nodes. The final Id is the terminal node the path ends on. */
+  path: Id[];
+}
+
+/**
+ * Represents a branch in the flow.
+ */
+export class ResolvedBranch<
+  DestinationType extends BaseFlowNode = BaseFlowNode
+> {
   /**
    * Branch index. Used when calling the continue function in iteration.
    */
@@ -65,15 +78,17 @@ export class FlowBranch {
   /**
    * Returns the terminal node
    */
-  destination(): BaseFlowNode {
-    return this.path[this.path.length - 1];
+  destination(): DestinationType {
+    return this.path[this.path.length - 1] as DestinationType;
   }
 
   /**
    * Checks if the terminal node is of a given type
    * @param type Type to check (can be string type name or type class)
    */
-  destinationIs(type: ArticyObjectCreator | string): boolean {
+  destinationIs<NewDestinationType extends DestinationType = DestinationType>(
+    type: ArticyObjectCreator<NewDestinationType> | string
+  ): this is ResolvedBranch<NewDestinationType> {
     if (typeof type === 'string') {
       return this.destination().is(type);
     }
@@ -86,7 +101,7 @@ export class FlowBranch {
    * @param type Flow node type
    * @param typeString Type string
    */
-  destinationAs<ObjectType>(
+  destinationAs<ObjectType extends DestinationType>(
     type: ArticyObjectCreator<ObjectType>,
     typeString?: string
   ): ObjectType | undefined {
@@ -136,6 +151,70 @@ export class FlowBranch {
     // Fail
     return undefined;
   }
+}
+
+/**
+ * Resolves a branch by converting all its IDs into Flow Node objects.
+ * @param branch Flow branch
+ * @param db Database
+ */
+export function resolveBranch(
+  branch: FlowBranch,
+  db: Database
+): ResolvedBranch {
+  return new ResolvedBranch(
+    branch.index,
+    branch.path.map(id => db.getObject(id, BaseFlowNode) as BaseFlowNode)
+  );
+}
+
+/**
+ * Resolves a list of branches all at once using @see resolveBranch
+ * @param branches List of flow branches
+ * @param db Database
+ */
+export function resolveBranches(
+  branches: FlowBranch[],
+  db: Database
+): ResolvedBranch[] {
+  return branches.map(b => resolveBranch(b, db));
+}
+
+/**
+ * Checks if the destination of a branch is a given type
+ * @param branch Flow branch to check
+ * @param db Database
+ * @param type Type to check for
+ */
+export function branchEndsWith(
+  branch: FlowBranch,
+  db: Database,
+  type: ArticyObjectCreator | string
+): boolean {
+  if (branch.path.length === 0) {
+    return false;
+  }
+
+  // Check type of final path entry
+  return db.isOfType(branch.path[branch.path.length - 1], type);
+}
+
+/**
+ * Resolves all branches in a list whose destination matches a given type
+ * @param branches Flow branch list
+ * @param db Database
+ * @param type Type to check the destination again
+ */
+export function getBranchesOfType<
+  DestinationType extends BaseFlowNode = BaseFlowNode
+>(
+  branches: FlowBranch[],
+  db: Database,
+  type: ArticyObjectCreator<DestinationType> | string
+): ResolvedBranch<DestinationType>[] {
+  return branches
+    .filter(b => branchEndsWith(b, db, type))
+    .map(b => resolveBranch(b, db) as ResolvedBranch<DestinationType>);
 }
 
 /**
@@ -388,8 +467,11 @@ export function advanceGameFlowState(
     counts: { ...state.visits.counts },
   };
 
+  // Resolve branch to get the actual nodes in the list
+  const resolvedBranch = resolveBranch(branch, db);
+
   // Execute each stage in the path
-  for (const step of branch.path) {
+  for (const step of resolvedBranch.path) {
     // Clone variable store if we're going to change it
     if (!hasCloned && step.needsShadow()) {
       hasCloned = true;
@@ -415,9 +497,9 @@ export function advanceGameFlowState(
   // Move to end
   let last = db.getObject(state.id, BaseFlowNode);
   if (branch.path.length > 1) {
-    last = branch.path[branch.path.length - 2];
+    last = resolvedBranch.path[branch.path.length - 2];
   }
-  const curr = branch.path[branch.path.length - 1];
+  const curr = resolvedBranch.path[branch.path.length - 1];
   const newFlowState = {
     // New node ID
     id: curr.properties.Id,
@@ -465,7 +547,7 @@ export function collectBranches(
 
   // Make sure branch object exists
   if (!branch) {
-    branch = new FlowBranch(index);
+    branch = { index, path: [] };
   }
 
   // Get number of branches
@@ -494,7 +576,7 @@ export function collectBranches(
     }
 
     // Otherwise, add to our current branch
-    branch.path.push(node);
+    branch.path.push(node.id);
 
     // Check if we're ready to stop
     if (shouldStopAt(node, config.stopAtTypes)) {
@@ -510,7 +592,7 @@ export function collectBranches(
           return [branch];
         } else if (behaviour === CustomStopType.StopAndContinue) {
           // We want to return a branch at the current position plus whatever branches follow us
-          const forked = new FlowBranch(index + 1, [...branch.path]);
+          const forked = { index: index + 1, path: [...branch.path] };
           return [
             branch,
             ...collectBranches(
@@ -551,7 +633,7 @@ export function collectBranches(
   let result: FlowBranch[] = [];
   for (let i = 0; i < branches; i++) {
     // Duplicate branch
-    const forked = new FlowBranch(index, [...branch.path]);
+    const forked = { index, path: [...branch.path] };
 
     // Go!
     result = [
