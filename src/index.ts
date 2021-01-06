@@ -9,6 +9,7 @@ export {
   Dialogue,
   DialogueFragment,
   FlowFragment,
+  Jump,
   Hub,
   Instruction,
   Condition,
