@@ -268,6 +268,11 @@ export enum CustomStopType {
    * Continue. Ignores stop. Continue iteration looking for terminals.
    */
   Continue = 'CONTINUE',
+
+  /**
+   * Stop but drops the whole branch. It's as if this node didn't exist.
+   */
+  Drop = 'DROP',
 }
 
 /**
@@ -606,6 +611,9 @@ export function collectBranches(
               node
             ),
           ];
+        } else if (behaviour === CustomStopType.Drop) {
+          // Drop. End this branch without returning anything.
+          return [];
         } else if (behaviour === CustomStopType.Continue) {
           // Continue. Do nothing
         } else {
