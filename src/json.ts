@@ -269,6 +269,15 @@ export interface LocationImageProps extends ZoneProps {
   ImageAsset: Id;
 }
 
+/** Properties for a link placed in a location */
+export interface LocationLinkProps extends ArticyObjectProps, ColorProps {
+  /** Position of the link in the location */
+  Position: PointData;
+
+  /** Link target */
+  Target: Id;
+}
+
 /** Properties for an asset */
 export interface AssetProps extends ArticyObjectProps, DisplayNameProps {
   /** Name of the original filename on disk */

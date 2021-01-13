@@ -1,11 +1,14 @@
 import {
+  ArticyObjectProps,
   LocationImageProps,
+  LocationLinkProps,
   LocationProps,
   TemplateProps,
   ZoneProps,
 } from './json';
 import { ArticyType } from './database';
 import { ArticyObject } from './types';
+import { ArticyCreatorArguments } from './object';
 
 /**
  * Articy location
@@ -31,3 +34,21 @@ export class Zone<
 export class LocationImage<
   TemplateType extends TemplateProps = TemplateProps
 > extends Zone<TemplateType, LocationImageProps> {}
+
+/**
+ * Link in a location
+ */
+@ArticyType('Link')
+export class LocationLink<
+  TemplateType extends TemplateProps = TemplateProps
+> extends ArticyObject<LocationLinkProps, TemplateType> {
+  /** Target of the link (or undefined) */
+  public readonly Target?: ArticyObject<ArticyObjectProps, TemplateProps>;
+
+  constructor(args: ArticyCreatorArguments) {
+    super(args);
+
+    // Grab target
+    this.Target = args.db.getObject(this.properties.Target, ArticyObject);
+  }
+}
