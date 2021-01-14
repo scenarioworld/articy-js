@@ -3,7 +3,13 @@ import {
   AnyAction,
   Middleware,
 } from '@reduxjs/toolkit';
-import { FeatureProps, Id, ScriptMethodDef } from './json';
+import {
+  FeatureProps,
+  FlowObjectProps,
+  Id,
+  ScriptMethodDef,
+  TemplateProps,
+} from './json';
 import { Database } from './database';
 import { BaseFlowNode } from './flowTypes';
 import { GameFlowState, VisitSet } from './iterator';
@@ -186,6 +192,31 @@ export function RegisterFeatureExecutionHandler<Feature extends FeatureProps>(
   }
 }
 
+type TemplateExecutionHandler<
+  Template extends TemplateProps = TemplateProps
+> = (
+  db: Database,
+  template: Template,
+  node: BaseFlowNode<FlowObjectProps, Template>,
+  state: GameFlowState
+) => Variable | void | ScriptGenerator;
+const templateHandlers: Map<string, TemplateExecutionHandler[]> = new Map();
+
+/**
+ * Registers a handler function called whenever a node with a given template is executed in flow.
+ * @param name Template name
+ * @param handler Handler to register
+ */
+export function RegisterTemplateExecutionHandler<
+  Template extends TemplateProps
+>(name: string, handler: TemplateExecutionHandler<Template>): void {
+  if (!templateHandlers.has(name)) {
+    templateHandlers.set(name, [handler as TemplateExecutionHandler]);
+  } else {
+    templateHandlers.get(name)?.push(handler as TemplateExecutionHandler);
+  }
+}
+
 /**
  * Calls all registered feature handlers for a node
  * @param node Flow node
@@ -215,6 +246,18 @@ export function OnNodeExecution(
       }
     }
   }
+
+  // Check its template
+  const myTemplateHandlers = templateHandlers.get(node.type);
+  if (myTemplateHandlers) {
+    // Iterate handlers
+    for (const handler of myTemplateHandlers) {
+      const returnValue = handler(node.db, node.template, node, state);
+      if (typeof returnValue === 'object') {
+        queueGeneratedActions(returnValue, false);
+      }
+    }
+  }
 }
 
 /**
@@ -222,6 +265,13 @@ export function OnNodeExecution(
  */
 export function ClearRegisteredFeatureHandlers(): void {
   featureHandlers.clear();
+}
+
+/**
+ * Clears all registered template handlers
+ */
+export function ClearRegisteredTemplateHandlers(): void {
+  templateHandlers.clear();
 }
 
 /**

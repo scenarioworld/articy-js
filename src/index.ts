@@ -14,7 +14,7 @@ export {
   Instruction,
   Condition,
 } from './flowTypes';
-export { Location, Zone, LocationImage } from './locationTypes';
+export { Location, Zone, LocationImage, LocationLink } from './locationTypes';
 
 export { Variable, VariableNamespace, VariableStore } from './variables';
 export {
@@ -43,6 +43,9 @@ export {
   runScript,
   RegisterScriptFunction,
   RegisterFeatureExecutionHandler,
+  RegisterTemplateExecutionHandler,
+  ClearRegisteredFeatureHandlers,
+  ClearRegisteredTemplateHandlers,
   VerifyRegisteredScriptMethod,
   createScriptDispatchMiddleware,
   ExtensionTypes,
