@@ -428,6 +428,10 @@ export function startupGameFlowState(
     return [NullGameFlowState, undefined];
   }
 
+  // Make sure to execute the start node
+  node.execute({ variables: initial.variables, visits: initial.visits });
+  OnNodeExecution(node, initial);
+
   // Check if it's a valid starting point
   if (shouldStopAt(node, config.stopAtTypes)) {
     return [initial, node];
