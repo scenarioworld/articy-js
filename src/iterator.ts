@@ -405,20 +405,22 @@ function shouldStopAt(
  * @param db Database
  * @param start Starting ID
  * @param config Advancement options
+ * @param existing Existing game state to migrate variables and visits from
  */
 export function startupGameFlowState(
   db: Database,
   start: Id,
-  config: GameIterationConfig
+  config: GameIterationConfig,
+  existing?: GameFlowState
 ): GameIterationResult {
   // Create initial state
   let initial: GameFlowState = {
     id: start,
     last: null,
     branches: [],
-    variables: db.newVariableStore(),
-    visits: EmptyVisitSet,
-    turn: 0,
+    variables: existing?.variables ?? db.newVariableStore(),
+    visits: existing?.visits ?? EmptyVisitSet,
+    turn: existing?.turn ?? 0,
   };
   initial = refreshBranches(db, initial, config);
 
