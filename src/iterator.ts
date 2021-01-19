@@ -434,8 +434,19 @@ export function startupGameFlowState(
   node.execute({ variables: initial.variables, visits: initial.visits });
   OnNodeExecution(node, initial);
 
+  // Mark it as visited
+  initial.visits.counts = {
+    ...initial.visits.counts,
+    [start]: (initial.visits.counts[start] ?? 0) + 1,
+  };
+  initial.visits.indicies = {
+    ...initial.visits.indicies,
+    [start]: initial.turn,
+  };
+
   // Check if it's a valid starting point
   if (shouldStopAt(node, config.stopAtTypes)) {
+    initial.turn++;
     return [initial, node];
   }
 
