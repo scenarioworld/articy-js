@@ -467,10 +467,6 @@ export function advanceGameFlowState(
   config: GameIterationConfig,
   branchIndex: number
 ): GameIterationResult {
-  // Check if its in bounds
-  if (branchIndex < 0 || branchIndex >= state.branches.length) {
-    return [state, undefined];
-  }
   if (!state.id) {
     return [state, undefined];
   }
