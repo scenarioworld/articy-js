@@ -659,7 +659,16 @@ export function collectBranches(
     // Go!
     result = [
       ...result,
-      ...collectBranches(db, iter, config, visits, forked, index, i, node),
+      ...collectBranches(
+        db,
+        { ...iter },
+        config,
+        visits,
+        forked,
+        index,
+        i,
+        node
+      ),
     ];
 
     // Update index
