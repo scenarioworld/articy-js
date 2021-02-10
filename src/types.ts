@@ -1,4 +1,5 @@
 import {
+  GlobalFeatures,
   ArticyObjectProps,
   AssetProps,
   EntityProps,
@@ -19,7 +20,7 @@ export class ArticyObject<
   public readonly properties: PropertiesType;
 
   /** Template from JSON */
-  public readonly template?: TemplateType;
+  public readonly template?: TemplateType & Partial<GlobalFeatures>;
 
   /** Type this was loaded as */
   public readonly type: string;

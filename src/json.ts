@@ -214,6 +214,11 @@ export interface DialogueFragmentProps
 /** Base export interface for all feature data */
 export type FeatureProps = {};
 
+/**
+ * Extend this in your application to add type handling for features used across many templates.
+ */
+export interface GlobalFeatures {}
+
 /** Properties for a template */
 export interface TemplateProps {
   /** Features available in this template */
