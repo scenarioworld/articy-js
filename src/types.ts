@@ -76,8 +76,8 @@ export class ArticyObject<
  */
 @ArticyType('Entity')
 export class Entity<
-  PropertiesType extends EntityProps = EntityProps
-> extends ArticyObject<PropertiesType> {
+  TemplateType extends TemplateProps = TemplateProps
+> extends ArticyObject<EntityProps, TemplateType> {
   /**
    * Gets the URL of the preview image for this entity
    */
@@ -90,7 +90,9 @@ export class Entity<
  * Asset type. Includes images, sounds, etc. stored in Articy.
  */
 @ArticyType('Asset')
-export class Asset extends ArticyObject<AssetProps> {
+export class Asset<
+  TemplateType extends TemplateProps = TemplateProps
+> extends ArticyObject<AssetProps, TemplateType> {
   /** Asset reference id. Used to lookup the resolved filename. */
   public readonly AssetRef: string | null;
 

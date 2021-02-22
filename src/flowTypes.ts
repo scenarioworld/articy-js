@@ -239,7 +239,9 @@ export class BasePinnedObject<
  * Base Hub class
  */
 @ArticyType('Hub')
-export class Hub extends BasePinnedObject {
+export class Hub<
+  TemplateType extends TemplateProps = TemplateProps
+> extends BasePinnedObject<PinnedObjectProps, TemplateType> {
   next(): BaseFlowNode | undefined {
     if (this.OutputPins.length === 0) {
       return undefined;
@@ -262,7 +264,9 @@ export class Hub extends BasePinnedObject {
  * Conditions that choose either their first or second output pin depending on the result of a condition script
  */
 @ArticyType('Condition')
-export class Condition extends BasePinnedObject<ScriptNodeProps> {
+export class Condition<
+  TemplateType extends TemplateProps = TemplateProps
+> extends BasePinnedObject<ScriptNodeProps, TemplateType> {
   next(
     context: ExecuteContext,
     _branchIndex: number,
@@ -292,7 +296,9 @@ export class Condition extends BasePinnedObject<ScriptNodeProps> {
  * Instruction that runs a script before moving onto the next node
  */
 @ArticyType('Instruction')
-export class Instruction extends BasePinnedObject<ScriptNodeProps> {
+export class Instruction<
+  TemplateType extends TemplateProps = TemplateProps
+> extends BasePinnedObject<ScriptNodeProps, TemplateType> {
   next(
     context: ExecuteContext,
     _branchIndex: number,
