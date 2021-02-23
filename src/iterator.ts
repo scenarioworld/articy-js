@@ -435,6 +435,7 @@ export function startupGameFlowState(
   OnNodeExecution(node, initial);
 
   // Mark it as visited
+  initial.visits = { ...initial.visits };
   initial.visits.counts = {
     ...initial.visits.counts,
     [start]: (initial.visits.counts[start] ?? 0) + 1,
