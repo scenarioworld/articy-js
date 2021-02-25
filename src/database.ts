@@ -24,6 +24,9 @@ export class Database {
   /** Map of IDs to Object Model Data (built from data file) */
   private readonly _lookup: Map<Id, ModelData> = new Map();
 
+  /** Map of technical IDs to GUIDs */
+  private readonly _technical: Map<string, Id> = new Map();
+
   /** Map of type names to base class names. Useful if the Articy project uses a template that isn't defined in JS */
   private readonly _classes: Map<string, string> = new Map();
 
@@ -61,6 +64,10 @@ export class Database {
       for (const model of pkg.Models) {
         // Add model to lookup based on its ID
         this._lookup.set(model.Properties.Id, model);
+        this._technical.set(
+          model.Properties.TechnicalName,
+          model.Properties.Id
+        );
 
         // Add children pins (if applicable)
         // TODO: Any way to generalize this? Kinda hacky.
@@ -72,11 +79,13 @@ export class Database {
           if (flowDef.InputPins) {
             for (const pin of flowDef.InputPins) {
               this._lookup.set(pin.Id, { Type: 'InputPin', Properties: pin });
+              this._technical.set(pin.TechnicalName, pin.Id);
             }
           }
           if (flowDef.OutputPins) {
             for (const pin of flowDef.OutputPins) {
               this._lookup.set(pin.Id, { Type: 'OutputPin', Properties: pin });
+              this._technical.set(pin.TechnicalName, pin.Id);
             }
           }
         }
@@ -275,6 +284,24 @@ export class Database {
       }
     }
     return results;
+  }
+
+  /**
+   * Loads an Articy Object into a given JS class by technical name (with type safety)
+   * @see getObject
+   * @param technicalName Technical name to search by
+   * @param type Object type
+   */
+  public getObjectByTechnicalName<ObjectType>(
+    technicalName: string,
+    type: ArticyObjectCreator<ObjectType>
+  ): ObjectType | undefined {
+    const id = this._technical.get(technicalName);
+    if (!id) {
+      return undefined;
+    }
+
+    return this.getObject<ObjectType>(id, type);
   }
 
   /**
