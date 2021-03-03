@@ -69,6 +69,20 @@ export class ArticyObject<
   ): ObjectType[] {
     return this.db.getChildrenOfType<ObjectType>(this.id, creator);
   }
+
+  /** Gets the parent of this object */
+  public getParent<ObjectType>(
+    type: ArticyObjectCreator<ObjectType>
+  ): ObjectType | undefined {
+    // Get parent id
+    const parentId = this.db.getParent(this.id);
+    if (!parentId) {
+      return undefined;
+    }
+
+    // Find object
+    return this.db.getObject(parentId, type);
+  }
 }
 
 /**

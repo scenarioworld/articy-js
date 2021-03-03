@@ -36,6 +36,9 @@ export class Database {
   /** Map of objects to their hierarchy entries */
   private readonly _hierarchy: Map<Id, HierarchyEntry> = new Map();
 
+  /** Map of objects to their parents */
+  private readonly _parents: Map<Id, Id> = new Map();
+
   /** Looks up asset files */
   private readonly _assetResolver?: ResolveAssetPath;
 
@@ -104,6 +107,9 @@ export class Database {
     if (entry.Children) {
       for (const child of entry.Children) {
         this.processHierarchy(child);
+
+        // Set parent
+        this._parents.set(child.Id, entry.Id);
       }
     }
   }
@@ -133,6 +139,14 @@ export class Database {
 
     // Failure
     return undefined;
+  }
+
+  /**
+   * Finds an object's parent in the hierarchy
+   * @param objectId Id of the object to get the parent of
+   */
+  public getParent(objectId: Id): Id | null {
+    return this._parents.get(objectId) ?? null;
   }
 
   /** Returns all children of an object */
