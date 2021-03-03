@@ -301,7 +301,7 @@ export interface ModelData<
   Properties: PropertiesType;
 
   /** Optional template properties */
-  Template?: TemplateType;
+  Template?: TemplateType & Partial<GlobalFeatures>;
 
   /** Path to asset (if this is an asset type) */
   AssetRef?: string;
