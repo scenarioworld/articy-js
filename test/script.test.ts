@@ -74,6 +74,50 @@ describe('A simple function that returns true', () => {
   });
 });
 
+describe('Comments in script', () => {
+  // Mock database
+  const db = ({} as unknown) as Database;
+
+  test('One line comment', () => {
+    const result = runScript(
+      '// this is a comment\ntrue',
+      {},
+      EmptyVisitSet,
+      '',
+      db,
+      true,
+      false
+    );
+    expect(result).toBe(true);
+  });
+
+  test('Multiple one line comments', () => {
+    const result = runScript(
+      '// this is a comment\n//And nother\ntrue',
+      {},
+      EmptyVisitSet,
+      '',
+      db,
+      true,
+      false
+    );
+    expect(result).toBe(true);
+  });
+
+  test('Multi-line comment', () => {
+    const result = runScript(
+      '/* This is a comment\n With lines */true',
+      {},
+      EmptyVisitSet,
+      '',
+      db,
+      true,
+      false
+    );
+    expect(result).toBe(true);
+  });
+});
+
 describe('A script environment with a single variable MyNamespace.Variable', () => {
   // Mock database
   const db = ({} as unknown) as Database;

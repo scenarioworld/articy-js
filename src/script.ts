@@ -274,6 +274,11 @@ export function ClearRegisteredTemplateHandlers(): void {
   templateHandlers.clear();
 }
 
+// Removes all comments from a script
+function scrubComments(script: string): string {
+  return script.replace(/(\/\/.*$)|(\/\*(.|[\r\n])*\*\/)/gm, '').trim();
+}
+
 /**
  * Runs a condition or instruction script
  * @param script Script to run
@@ -292,6 +297,14 @@ export function runScript(
   returns: boolean,
   shadowing: boolean
 ): boolean {
+  // No script? Return true.
+  if (!script || script === '') {
+    return true;
+  }
+
+  // Clean up comments
+  script = scrubComments(script);
+
   // No script? Return true.
   if (!script || script === '') {
     return true;
