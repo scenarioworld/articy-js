@@ -511,6 +511,19 @@ export function advanceGameFlowState(
 
     // Set current turn
     visits.indicies[step.properties.Id] = state.turn;
+
+    // Deal with extra visits
+    let forcedVisits = step.visits({ variables: vars, visits: visits });
+    if (forcedVisits !== undefined && forcedVisits.length > 0) {
+      if (typeof forcedVisits === 'string') {
+        forcedVisits = [forcedVisits];
+      }
+
+      for (const id of forcedVisits) {
+        visits.counts[id] = (visits.counts[id] ?? 0) + 1;
+        visits.indicies[id] = state.turn;
+      }
+    }
   }
 
   // Move to end

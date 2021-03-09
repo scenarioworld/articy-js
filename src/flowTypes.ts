@@ -69,6 +69,15 @@ export class BaseFlowNode<
   execute(_context: ExecuteContext): void {
     // do nothing
   }
+
+  /**
+   * If this returns something other than undefined, then all node Ids returned will be counted as visited at the same time as this node
+   * @param _context Execution context
+   * @returns Id(s) to visit
+   */
+  visits(_context: ExecuteContext): Id | Id[] | undefined {
+    return undefined;
+  }
 }
 
 function nextFromConnections(
