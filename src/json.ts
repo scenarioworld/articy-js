@@ -102,10 +102,8 @@ export interface EntityProps
   extends ArticyObjectProps,
     DisplayNameProps,
     ColorProps,
-    PreviewImageProps {
-  /** Description */
-  Description: string;
-}
+    PreviewImageProps,
+    TextProps {}
 
 /** Base export interface for all flow objects (dialogue fragments, conditions, etc.) */
 export interface FlowObjectProps extends ArticyObjectProps {
