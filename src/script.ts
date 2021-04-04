@@ -16,7 +16,9 @@ import { GameFlowState, VisitSet } from './iterator';
 import { Variable, VariableStore } from './variables';
 
 export interface ExtensionTypes {}
-type ApplicationState = ExtensionTypes extends { ApplicationState: unknown }
+export type ApplicationState = ExtensionTypes extends {
+  ApplicationState: unknown;
+}
   ? ExtensionTypes['ApplicationState']
   : unknown;
 
@@ -55,6 +57,9 @@ const registeredFunctions: Record<string, ScriptFunction> = {};
 
 // State context (only set while root reducer is running)
 let state: Readonly<ApplicationState> | undefined = undefined;
+export function GetState(): typeof state {
+  return state;
+}
 
 // Queued actions
 let actionQueue: AnyAction[] | undefined = undefined;

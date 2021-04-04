@@ -17,10 +17,10 @@ export class ArticyObject<
   TemplateType extends TemplateProps = TemplateProps
 > {
   /** Properties from JSON */
-  public readonly properties: PropertiesType;
+  public readonly properties: Readonly<PropertiesType>;
 
   /** Template from JSON */
-  public readonly template?: TemplateType & Partial<GlobalFeatures>;
+  public readonly template?: Readonly<TemplateType & Partial<GlobalFeatures>>;
 
   /** Type this was loaded as */
   public readonly type: string;

@@ -2,7 +2,7 @@ import { ArticyObjectProps, Id } from './json';
 import { Database } from './database';
 import { BaseFlowNode } from './flowTypes';
 import { ArticyObjectCreator } from './object';
-import { OnNodeExecution } from './script';
+import { ApplicationState, GetState, OnNodeExecution } from './script';
 import { ArticyObject } from './types';
 import { VariableStore } from './variables';
 
@@ -290,7 +290,8 @@ export interface GameIterationConfig {
    */
   customStopHandler?: (
     node: BaseFlowNode,
-    visits: VisitSet
+    visits: Readonly<VisitSet>,
+    state?: Readonly<ApplicationState>
   ) => CustomStopType | void;
 }
 
@@ -614,7 +615,7 @@ export function collectBranches(
     if (shouldStopAt(node, config.stopAtTypes)) {
       // Check if there's custom stop logic for this node
       if (config.customStopHandler) {
-        const behaviour = config.customStopHandler(node, visits);
+        const behaviour = config.customStopHandler(node, visits, GetState());
 
         // Default behaviour. Return branch and stop.
         if (
