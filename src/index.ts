@@ -1,3 +1,6 @@
+// Make sure native script functions get registered
+import './nativeFunctions';
+
 export { NullId, ArticyObjectCreator } from './object';
 export { Database, RegisterDatabaseTypeClass, ArticyType } from './database';
 

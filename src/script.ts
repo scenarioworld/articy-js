@@ -4,6 +4,7 @@ import {
   Middleware,
 } from '@reduxjs/toolkit';
 import {
+  ArticyObjectProps,
   FeatureProps,
   FlowObjectProps,
   Id,
@@ -152,11 +153,23 @@ export function RegisterScriptFunction(
   registeredFunctions[name] = func;
 }
 
+const nativeScriptFunctions = [
+  'random',
+  'getProp',
+  'setProp',
+  'print',
+  'getObj',
+];
+
 /**
  * Clears all registered functions
  */
 export function ClearRegisteredScriptFunctions(): void {
   for (const key of Object.keys(registeredFunctions)) {
+    // Don't delete native functions
+    if (nativeScriptFunctions.includes(key)) {
+      continue;
+    }
     delete registeredFunctions[key];
   }
 }
@@ -284,6 +297,8 @@ function scrubComments(script: string): string {
   return script.replace(/(\/\/.*$)|(\/\*(.|[\r\n])*\*\/)/gm, '').trim();
 }
 
+type MaybeSpeaker = { Speaker?: Id } & ArticyObjectProps;
+
 /**
  * Runs a condition or instruction script
  * @param script Script to run
@@ -325,6 +340,8 @@ export function runScript(
   // eslint-disable-next-line no-new-func
   const func = new Function(
     'window',
+    'self',
+    'speaker',
     ...names,
     ...funcNames,
     `"use strict"; ${returns ? 'return' : ''} ${script}`
@@ -339,10 +356,18 @@ export function runScript(
     state,
   };
 
+  // Figure out speaker variable
+  //const speaker: Id|undefined = db.isOfType(caller, DialogueFragment) ? db.getProperties<DialogueFragmentProps>(caller)?.Speaker : undefined;
+
+  const speaker: Id | undefined = db.getProperties<MaybeSpeaker>(caller)
+    ?.Speaker;
+
   // Call the function with the variable sets
   const result = func.call(
     undefined,
     undefined,
+    caller,
+    speaker,
     ...names.map(n => variables[n]),
     ...funcNames.map(f =>
       wrapScriptFunction(registeredFunctions[f], context, shadowing)

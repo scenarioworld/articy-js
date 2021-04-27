@@ -16,6 +16,15 @@ beforeEach(() => {
   ClearRegisteredScriptFunctions();
 });
 
+const mockDatabase = ({
+  isOfType: () => {
+    return false;
+  },
+  getProperties: () => {
+    return {};
+  },
+} as unknown) as Database;
+
 describe('A simple function with no return value', () => {
   // Register simple script function
   const func = jest.fn<
@@ -27,7 +36,7 @@ describe('A simple function with no return value', () => {
   });
 
   // Mock database
-  const db = ({} as unknown) as Database;
+  const db = mockDatabase;
 
   test('Calling function in script calls the bound javascript function', () => {
     runScript('func()', {}, EmptyVisitSet, '', db, false, false);
@@ -61,7 +70,7 @@ describe('A simple function that returns true', () => {
   });
 
   // Mock database
-  const db = ({} as unknown) as Database;
+  const db = mockDatabase;
 
   test('Script result should be true', () => {
     const result = runScript('func()', {}, EmptyVisitSet, '', db, true, false);
@@ -76,7 +85,7 @@ describe('A simple function that returns true', () => {
 
 describe('Comments in script', () => {
   // Mock database
-  const db = ({} as unknown) as Database;
+  const db = mockDatabase;
 
   test('One line comment', () => {
     const result = runScript(
@@ -120,7 +129,7 @@ describe('Comments in script', () => {
 
 describe('A script environment with a single variable MyNamespace.Variable', () => {
   // Mock database
-  const db = ({} as unknown) as Database;
+  const db = mockDatabase;
 
   // Mock variable store
   const vars = { MyNamespace: { Variable: 45 } };
@@ -155,7 +164,7 @@ describe('A script environment with a single variable MyNamespace.Variable', () 
 
 describe('Script middleware', () => {
   // Mock database
-  const db = ({} as unknown) as Database;
+  const db = mockDatabase;
 
   const executeScript = <T extends AnyAction>(action: T) => {
     runScript('func()', {}, EmptyVisitSet, '', db, false, false);
