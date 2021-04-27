@@ -37,6 +37,7 @@ export {
   branchEndsWith,
   getBranchesOfType,
   mergeGameFlowState,
+  completeFlow,
   NullGameFlowState,
   CustomStopType,
 } from './iterator';

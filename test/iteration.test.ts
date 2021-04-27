@@ -3,6 +3,8 @@ import {
   mergeGameFlowState,
   GameIterationConfig,
   startupGameFlowState,
+  completeFlow,
+  advanceGameFlowState,
 } from '../src/iterator';
 import { ArticyData } from '../src/json';
 const TestData: ArticyData = require('./data.articy.json');
@@ -54,5 +56,41 @@ describe('Basic iteration configuration', () => {
     expect(mergedIter.branches.map(b => b.index).sort()).toEqual(
       [0, 1, 2, 3, 4].sort()
     );
+  });
+});
+
+describe('A flow with terminal branches', () => {
+  // Start ID
+  const startId = '0x010000000000018B';
+
+  // Basic config
+  const config: GameIterationConfig = {
+    stopAtTypes: ['DialogueFragment'],
+  };
+
+  test('Calling completeFlow when there are valid branches does nothing', () => {
+    let [iter] = startupGameFlowState(TestDB, startId, config);
+
+    // Call early complete. Should not cause the terminal branch to call
+    const earlyComplete = completeFlow(TestDB, iter);
+    expect(earlyComplete.variables['Test']['Integer']).toBe(0);
+  });
+
+  test('Calling completeFlow when there are no branches should execute remaining non-stop nodes', () => {
+    // Start
+    let [iter] = startupGameFlowState(TestDB, startId, config);
+
+    // Advance to next node
+    [iter] = advanceGameFlowState(TestDB, iter, config, 0);
+
+    // Call complete
+    const finalComplete = completeFlow(TestDB, iter);
+
+    // Instruction should have been called
+    expect(finalComplete.variables['Test']['Integer']).toBe(2);
+
+    // We should not have a current id since we're 'complete'
+    expect(finalComplete.id).toBe(null);
+    expect(finalComplete.last).toBe(null);
   });
 });

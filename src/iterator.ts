@@ -267,6 +267,13 @@ export interface GameFlowState extends SimpleFlowState {
    * Turn counter. Not sure what it represents but it goes up.
    */
   turn: number;
+
+  /**
+   * This is the "terminal branch" executed when completeFlow is called.
+   * It is the first branch of available nodes that does NOT lead to a stopping node.
+   * An example might be a series of instruction nodes after the last dialogue fragment in a flow.
+   */
+  terminalBranch: FlowBranch | undefined;
 }
 
 /**
@@ -281,6 +288,7 @@ export const NullGameFlowState: GameFlowState = {
   visits: EmptyVisitSet,
   branches: [],
   turn: 0,
+  terminalBranch: undefined,
 };
 
 /**
@@ -468,6 +476,7 @@ export function startupGameFlowState(
     variables: existing?.variables ?? db.newVariableStore(),
     visits: existing?.visits ?? EmptyVisitSet,
     turn: existing?.turn ?? 0,
+    terminalBranch: undefined,
   };
   initial = refreshBranches(db, initial, config);
 
@@ -614,6 +623,9 @@ export function advanceGameFlowState(
 
     // Next turn index
     turn: state.turn + 1,
+
+    // No known terminate branch - will be refreshed after
+    terminalBranch: undefined,
   };
 
   // Refresh this new state with fresh branches
@@ -676,7 +688,9 @@ export function mergeGameFlowState(
   };
 }
 
-type CollectionResult = Partial<Pick<GameFlowState, 'pages' | 'branches'>>;
+type CollectionResult = Partial<
+  Pick<GameFlowState, 'pages' | 'branches' | 'terminalBranch'>
+>;
 function merge(a: CollectionResult, b: CollectionResult): CollectionResult {
   const branches: CollectionResult =
     a.branches || b.branches
@@ -692,6 +706,7 @@ function merge(a: CollectionResult, b: CollectionResult): CollectionResult {
   return {
     ...branches,
     ...pages,
+    terminalBranch: a.terminalBranch ?? b.terminalBranch,
   };
 }
 
@@ -742,7 +757,8 @@ export function collectBranches(
 
     // If no node exists, this is a dead end
     if (!node) {
-      return {};
+      // Return this branch as a "terminal branch" that can be used if we want to finish up iteration with complete
+      return { terminalBranch: branch };
     }
 
     // Otherwise, add to our current branch
@@ -825,6 +841,11 @@ export function collectBranches(
     );
   }
 
+  // Dead end handling
+  if (branches === 0) {
+    return { terminalBranch: branch };
+  }
+
   // If we're here, we've reached a fork
   let result: CollectionResult = {};
   for (let i = 0; i < branches; i++) {
@@ -898,4 +919,47 @@ export function refreshBranches(
 
   // Return iterator
   return result;
+}
+
+/**
+ * If the flow state has no branches, "complete" the flow by running any remaining pins or instructions after the current node.
+ * @param db Database
+ * @param state Current state
+ */
+export function completeFlow(
+  db: Database,
+  state: GameFlowState
+): GameFlowState {
+  // If there are valid branches or no terminal branch, do nothing but clear the iterator
+  if (state.branches.length > 0 || !state.terminalBranch) {
+    return {
+      ...state,
+      id: null,
+      last: null,
+      branches: [],
+      terminalBranch: undefined,
+      mergePages: [],
+      pages: [],
+    };
+  }
+
+  // Otherwise, execute the terminating branch
+  const [variables, visits] = executeFlowBranch(
+    state,
+    state.terminalBranch,
+    db
+  );
+
+  // Return the new state with modified variables and visits but no current node or branches. We're done.
+  return {
+    ...state,
+    variables,
+    visits,
+    id: null,
+    last: null,
+    branches: [],
+    terminalBranch: undefined,
+    mergePages: [],
+    pages: [],
+  };
 }
