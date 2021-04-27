@@ -1,7 +1,7 @@
 export { NullId, ArticyObjectCreator } from './object';
 export { Database, RegisterDatabaseTypeClass, ArticyType } from './database';
 
-export { ArticyObject, Entity, Asset } from './types';
+export { ArticyObject, Entity, Asset, TemplateExtension } from './types';
 export {
   BaseFlowNode,
   InputPin,
@@ -13,6 +13,7 @@ export {
   Hub,
   Instruction,
   Condition,
+  BasePinnedObject,
 } from './flowTypes';
 export { Location, Zone, LocationImage, LocationLink } from './locationTypes';
 
@@ -35,6 +36,7 @@ export {
   resolveBranches,
   branchEndsWith,
   getBranchesOfType,
+  mergeGameFlowState,
   NullGameFlowState,
   CustomStopType,
 } from './iterator';

@@ -1,7 +1,7 @@
 import { ArticyObjectProps, Id } from './json';
 import { Database } from './database';
 import { BaseFlowNode } from './flowTypes';
-import { ArticyObjectCreator } from './object';
+import { ArticyObjectCreator, NullId } from './object';
 import { ApplicationState, GetState, OnNodeExecution } from './script';
 import { ArticyObject } from './types';
 import { VariableStore } from './variables';
@@ -24,7 +24,10 @@ export interface VisitIndicies {
  * Keeps track of visited nodes.
  */
 export interface VisitSet {
+  /** Map of IDs to the number of times the node has been visited (unset = unvisited) */
   counts: VisitCounts;
+
+  /** Map of IDs to the last turn ID the node was visited. Useful for sorting by how recently a node was seen. */
   indicies: VisitIndicies;
 }
 
@@ -35,8 +38,13 @@ export const EmptyVisitSet: VisitSet = { counts: {}, indicies: {} };
  * Represents a basic iterator in the flow.
  */
 export interface SimpleFlowState {
+  /** Id of the current node */
   id: Id | null;
+
+  /** Last node. Needed for FlowFragments to decide which internal pin to follow. */
   last: Id | null;
+
+  /** Current value of all variables */
   variables: VariableStore;
 
   /** If true, we're in shadow mode. Don't commit any permenant changes to game state. */
@@ -52,6 +60,9 @@ export interface FlowBranch {
 
   /** Path. Following this branch will move through all these nodes. The final Id is the terminal node the path ends on. */
   path: Id[];
+
+  /** In the case of additional pages, this tracks what node this branch is actually coming off of. */
+  branchedFrom: Id;
 }
 
 /**
@@ -70,9 +81,19 @@ export class ResolvedBranch<
    */
   public readonly path: BaseFlowNode[];
 
-  constructor(index = -1, path: BaseFlowNode[] = []) {
+  /**
+   * In the case of additional pages, this tracks what node this branch is actually coming off of.
+   */
+  readonly branchedFrom: Id;
+
+  constructor(
+    index = -1,
+    path: BaseFlowNode[] = [],
+    branchedFrom: Id = NullId
+  ) {
     this.index = index;
     this.path = path;
+    this.branchedFrom = branchedFrom;
   }
 
   /**
@@ -164,7 +185,8 @@ export function resolveBranch(
 ): ResolvedBranch {
   return new ResolvedBranch(
     branch.index,
-    branch.path.map(id => db.getObject(id, BaseFlowNode) as BaseFlowNode)
+    branch.path.map(id => db.getObject(id, BaseFlowNode) as BaseFlowNode),
+    branch.branchedFrom
   );
 }
 
@@ -222,6 +244,16 @@ export function getBranchesOfType<
  */
 export interface GameFlowState extends SimpleFlowState {
   /**
+   * Normally, just a list containing the current id. If you use the CreatePage stop type or mergeGameFlowState, you'll get additional pages here.
+   */
+  pages: Id[];
+
+  /**
+   * A subset of pages that were added via the mergeGameFlowState. This is used only internally to make refreshBranches work properly with mergeGameFlowState
+   */
+  mergePages: { id: Id; last: Id }[];
+
+  /**
    * Cache of branches available at this juncture
    */
   branches: FlowBranch[];
@@ -243,6 +275,8 @@ export interface GameFlowState extends SimpleFlowState {
 export const NullGameFlowState: GameFlowState = {
   id: null,
   last: null,
+  pages: [],
+  mergePages: [],
   variables: {},
   visits: EmptyVisitSet,
   branches: [],
@@ -273,6 +307,16 @@ export enum CustomStopType {
    * Stop but drops the whole branch. It's as if this node didn't exist.
    */
   Drop = 'DROP',
+
+  /**
+   * Adds this node to the "additional pages" list in the iterator. Otherwise, operates like Continue.
+   */
+  CreatePage = 'CREATE_PAGE',
+
+  /**
+   * Operates like NormalStop except when taking this branch, we advance past this node until we get a non-Advance node.
+   */
+  Advance = 'ADVANCE',
 }
 
 /**
@@ -418,7 +462,9 @@ export function startupGameFlowState(
   let initial: GameFlowState = {
     id: start,
     last: null,
+    pages: [start],
     branches: [],
+    mergePages: [],
     variables: existing?.variables ?? db.newVariableStore(),
     visits: existing?.visits ?? EmptyVisitSet,
     turn: existing?.turn ?? 0,
@@ -456,29 +502,11 @@ export function startupGameFlowState(
   return advanceGameFlowState(db, initial, config, 0);
 }
 
-/**
- * Advances a flow state until it hits a node that matches the search criteria.
- * @param db Database
- * @param state Current flow state
- * @param branchIndex Branch index to follow
- * @returns A new game flow state with a list of available branches. Also returns the current node to avoid unncessary lookups.
- */
-export function advanceGameFlowState(
-  db: Database,
+function executeFlowBranch(
   state: GameFlowState,
-  config: GameIterationConfig,
-  branchIndex: number
-): GameIterationResult {
-  if (!state.id) {
-    return [state, undefined];
-  }
-
-  // Get branch to follow
-  const branch = state.branches.find(x => x.index === branchIndex);
-  if (!branch) {
-    return [state, undefined];
-  }
-
+  branch: FlowBranch,
+  db: Database
+): [VariableStore, VisitSet, ResolvedBranch] {
   let vars = state.variables;
   let hasCloned = false;
 
@@ -527,18 +555,53 @@ export function advanceGameFlowState(
     }
   }
 
+  return [vars, visits, resolvedBranch];
+}
+
+/**
+ * Advances a flow state until it hits a node that matches the search criteria.
+ * @param db Database
+ * @param state Current flow state
+ * @param branchIndex Branch index to follow
+ * @returns A new game flow state with a list of available branches. Also returns the current node to avoid unncessary lookups.
+ */
+export function advanceGameFlowState(
+  db: Database,
+  state: GameFlowState,
+  config: GameIterationConfig,
+  branchIndex: number
+): GameIterationResult {
+  if (!state.id) {
+    return [state, undefined];
+  }
+
+  // Get branch to follow
+  const branch = state.branches.find(x => x.index === branchIndex);
+  if (!branch) {
+    return [state, undefined];
+  }
+
+  // Execute the branch
+  const [vars, visits, resolvedBranch] = executeFlowBranch(state, branch, db);
+
   // Move to end
   let last = db.getObject(state.id, BaseFlowNode);
   if (branch.path.length > 1) {
     last = resolvedBranch.path[branch.path.length - 2];
   }
   const curr = resolvedBranch.path[branch.path.length - 1];
-  const newFlowState = {
+  let newFlowState: GameFlowState = {
     // New node ID
     id: curr.properties.Id,
 
     // Id of the last node we were on
     last: last?.properties.Id,
+
+    // Start with no new pages
+    pages: [curr.properties.Id],
+
+    // No merged pages either
+    mergePages: [],
 
     // Empty branch list - will be refreshed after
     branches: [],
@@ -553,8 +616,83 @@ export function advanceGameFlowState(
     turn: state.turn + 1,
   };
 
-  // Return state with branches
-  return [refreshBranches(db, newFlowState, config), curr];
+  // Refresh this new state with fresh branches
+  newFlowState = refreshBranches(db, newFlowState, config);
+
+  // SPECIAL: Advancement, skip ahead to the next branch
+  if (
+    newFlowState.branches.length > 0 &&
+    config.customStopHandler?.(curr, newFlowState.visits, GetState()) ===
+      CustomStopType.Advance
+  ) {
+    return advanceGameFlowState(db, newFlowState, config, 0);
+  }
+
+  // Otherwise, return
+  return [newFlowState, curr];
+}
+
+/**
+ * Creates a second "thread" in a flow iterator starting at a given node. This will not change the current id of the iterator, but
+ * will instead add the results of this new thread to the pages list of the iterator. This is useful if you want to merge two flows
+ * together.
+ * @param db Articy database
+ * @param state Current flow iterator
+ * @param config Iteration configuration
+ * @param start Id to start the new thread from. Will iterate until it finds something that matches the stop types of config and merge branches/pages
+ * @returns Merged iterator
+ */
+export function mergeGameFlowState(
+  db: Database,
+  state: GameFlowState,
+  config: GameIterationConfig,
+  start: Id
+): GameFlowState {
+  // Create a new flow state starting at the starting index but using our existing state for variables, etc.
+  const [newStartupState] = startupGameFlowState(db, start, config, state);
+
+  // Now, we need to merge the states. Find the highest branch number of our existing state
+  const maxBranchIndex = Math.max(...state.branches.map(b => b.index));
+
+  // Merge the states
+  return {
+    ...newStartupState,
+    id: state.id,
+    last: state.last,
+    pages: [...state.pages, ...newStartupState.pages],
+    mergePages: [
+      ...state.mergePages,
+      ...(newStartupState.id
+        ? [{ id: newStartupState.id, last: newStartupState.last! }]
+        : []),
+    ],
+    branches: [
+      ...state.branches,
+      ...newStartupState.branches.map(b => ({
+        ...b,
+        index: b.index + maxBranchIndex + 1,
+      })),
+    ],
+  };
+}
+
+type CollectionResult = Partial<Pick<GameFlowState, 'pages' | 'branches'>>;
+function merge(a: CollectionResult, b: CollectionResult): CollectionResult {
+  const branches: CollectionResult =
+    a.branches || b.branches
+      ? { branches: [...(a.branches ?? []), ...(b.branches ?? [])] }
+      : {};
+  const pages: CollectionResult =
+    a.pages || b.pages
+      ? {
+          pages: [...(a.pages ?? []), ...(b.pages ?? [])],
+        }
+      : {};
+
+  return {
+    ...branches,
+    ...pages,
+  };
 }
 
 export function collectBranches(
@@ -566,21 +704,21 @@ export function collectBranches(
   index = 0,
   direction = -1,
   node?: BaseFlowNode
-): FlowBranch[] {
+): CollectionResult {
   // No valid ID? Return nothing.
   if (!iter.id) {
-    return [];
+    return {};
   }
 
   // Get the node at this flow state
   node = node ?? db.getObject(iter.id, BaseFlowNode);
   if (!node) {
-    return [];
+    return {};
   }
 
   // Make sure branch object exists
   if (!branch) {
-    branch = { index, path: [] };
+    branch = { index, path: [], branchedFrom: iter.id };
   }
 
   // Get number of branches
@@ -604,8 +742,7 @@ export function collectBranches(
 
     // If no node exists, this is a dead end
     if (!node) {
-      // No return since we didn't hit a valid end point
-      return [];
+      return {};
     }
 
     // Otherwise, add to our current branch
@@ -620,15 +757,20 @@ export function collectBranches(
         // Default behaviour. Return branch and stop.
         if (
           behaviour === CustomStopType.NormalStop ||
+          behaviour === CustomStopType.Advance ||
           behaviour === undefined
         ) {
-          return [branch];
+          return { branches: [branch] };
         } else if (behaviour === CustomStopType.StopAndContinue) {
           // We want to return a branch at the current position plus whatever branches follow us
-          const forked = { index: index + 1, path: [...branch.path] };
-          return [
-            branch,
-            ...collectBranches(
+          const forked: FlowBranch = {
+            index: index + 1,
+            path: [...branch.path],
+            branchedFrom: branch.branchedFrom,
+          };
+          return merge(
+            { branches: [branch] },
+            collectBranches(
               db,
               iter,
               config,
@@ -637,11 +779,29 @@ export function collectBranches(
               index + 1,
               0,
               node
-            ),
-          ];
+            )
+          );
         } else if (behaviour === CustomStopType.Drop) {
           // Drop. End this branch without returning anything.
-          return [];
+          return {};
+        } else if (behaviour === CustomStopType.CreatePage) {
+          // Create new page and continue branching
+          if (iter.id) {
+            const newBranch: FlowBranch = { ...branch, branchedFrom: iter.id };
+            return merge(
+              { pages: [iter.id] },
+              collectBranches(
+                db,
+                iter,
+                config,
+                visits,
+                newBranch,
+                index + 1,
+                0,
+                node
+              )
+            );
+          }
         } else if (behaviour === CustomStopType.Continue) {
           // Continue. Do nothing
         } else {
@@ -649,11 +809,11 @@ export function collectBranches(
           console.log(
             `Unexpected custom stop behaviour found: ${behaviour}. Unsure what to do.... Stopping here.`
           );
-          return [branch];
+          return { branches: [branch] };
         }
       } else {
         // No custom stop behaviour. Use default stop and return branch.
-        return [branch];
+        return { branches: [branch] };
       }
     }
 
@@ -666,29 +826,23 @@ export function collectBranches(
   }
 
   // If we're here, we've reached a fork
-  let result: FlowBranch[] = [];
+  let result: CollectionResult = {};
   for (let i = 0; i < branches; i++) {
     // Duplicate branch
-    const forked = { index, path: [...branch.path] };
+    const forked: FlowBranch = {
+      index,
+      path: [...branch.path],
+      branchedFrom: branch.branchedFrom,
+    };
 
-    // Go!
-    result = [
-      ...result,
-      ...collectBranches(
-        db,
-        { ...iter },
-        config,
-        visits,
-        forked,
-        index,
-        i,
-        node
-      ),
-    ];
+    result = merge(
+      result,
+      collectBranches(db, { ...iter }, config, visits, forked, index, i, node)
+    );
 
     // Update index
-    if (result.length > 0) {
-      index = result[result.length - 1].index + 1;
+    if (result.branches && result.branches.length > 0) {
+      index = result.branches[result.branches.length - 1].index + 1;
     }
   }
 
@@ -710,14 +864,38 @@ export function refreshBranches(
   state: GameFlowState,
   config: GameIterationConfig
 ): GameFlowState {
-  const result = { ...state };
-  const vars = state.variables;
-  result.branches = collectBranches(
-    db,
-    { ...state, shadowing: true },
-    config,
-    state.visits
+  // Do normal branch collection, clearing page lists
+  const result: GameFlowState = { ...state, pages: [] };
+  Object.assign(
+    result,
+    collectBranches(db, { ...state, shadowing: true }, config, state.visits)
   );
-  result.variables = vars;
+  if (state.id !== null) {
+    result.pages.splice(0, 0, state.id);
+  }
+
+  // Handle merged pages
+  for (const page of state.mergePages) {
+    // Collect branches for the merged page
+    const iter: SimpleFlowState = { ...result, ...page };
+    const newBranchResults = collectBranches(db, iter, config, result.visits);
+
+    // Append branches/pages to the iterator
+    result.pages.push(page.id);
+    const maxIndex = Math.max(...result.branches.map(b => b.index));
+    if (newBranchResults.pages) {
+      result.pages.push(...newBranchResults.pages);
+    }
+    if (newBranchResults.branches) {
+      result.branches.push(
+        ...newBranchResults.branches.map(b => ({
+          ...b,
+          index: b.index + maxIndex + 1,
+        }))
+      );
+    }
+  }
+
+  // Return iterator
   return result;
 }

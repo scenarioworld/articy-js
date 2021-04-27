@@ -2,7 +2,9 @@ import {
   ArticyData,
   ArticyObjectProps,
   EnumDefinition,
+  FeatureProps,
   FlowFragmentProps,
+  GlobalFeatures,
   HierarchyEntry,
   Id,
   ModelData,
@@ -12,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ArticyCreatorArguments, ArticyObjectCreator } from './object';
 import { VerifyRegisteredScriptMethod } from './script';
 import { Variable, VariableNamespace, VariableStore } from './variables';
+import { TemplateExtension } from './types';
 
 // Resolve an asset to a real path
 type ResolveAssetPath = (assetRef: string) => string | null | undefined;
@@ -398,6 +401,70 @@ export class Database {
       }
     }
     return results;
+  }
+
+  /**
+   * Finds all models whose template has a given feature
+   * @param featureName Name of the feature in the template
+   * @returns All models whose templates contain the feature
+   */
+  public getModelsWithFeature<
+    Feature extends FeatureProps,
+    FeatureName extends string
+  >(
+    featureName: FeatureName
+  ): ModelData<ArticyObjectProps, { FeatureName: Feature }>[] {
+    const results: ModelData<
+      ArticyObjectProps,
+      { FeatureName: Feature }
+    >[] = [];
+    for (const model of this._lookup.values()) {
+      if (model.Template && featureName in model.Template) {
+        results.push(
+          model as ModelData<ArticyObjectProps, { FeatureName: Feature }>
+        );
+      }
+    }
+    return results;
+  }
+
+  /**
+   * Returns objects of a given type with a given feature name.
+   * This is a special type-safe version that works only with features that are a part of the GlobalFeatures interface.
+   * @param featureName Name of the feature to search for
+   * @param creator Object type to return
+   */
+  public getObjectsWithFeature<
+    FeatureName extends keyof GlobalFeatures,
+    ObjectType
+  >(
+    featureName: FeatureName,
+    creator: ArticyObjectCreator<ObjectType>
+  ): (ObjectType &
+    TemplateExtension<FeatureName, GlobalFeatures[FeatureName]>)[];
+
+  /**
+   * Returns objects of a given type with a given feature name
+   * @param featureName Name of the feature to search for
+   * @param creator Object type to return
+   */
+  public getObjectsWithFeature<ObjectType>(
+    featureName: string,
+    creator: ArticyObjectCreator<ObjectType>
+  ): ObjectType[];
+
+  public getObjectsWithFeature(
+    featureName: string,
+    creator: ArticyObjectCreator
+  ) {
+    const ids: string[] = [];
+    for (const model of this._lookup.values()) {
+      if (model.Template && featureName in model.Template) {
+        ids.push(model.Properties.Id);
+      }
+    }
+
+    return ids.map(id => this.getObject(id, creator)).filter(obj => obj);
   }
 
   /**

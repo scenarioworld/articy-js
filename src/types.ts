@@ -5,9 +5,20 @@ import {
   EntityProps,
   Id,
   TemplateProps,
+  FeatureProps,
 } from './json';
 import { Database, ArticyType } from './database';
 import { ArticyCreatorArguments, ArticyObjectCreator } from './object';
+
+/**
+ * Type interface you can & with ArticyObject to guarantee its template includes a given feature
+ */
+export interface TemplateExtension<
+  FeatureName extends string,
+  FeatureType extends FeatureProps
+> {
+  template: Readonly<Record<FeatureName, FeatureType>>;
+}
 
 /**
  * Base class for all articy objects
