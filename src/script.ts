@@ -252,7 +252,7 @@ export function OnNodeExecution(
     // Check if we have a handler for that feature
     const handlers = featureHandlers.get(key);
     if (!handlers) {
-      break;
+      continue;
     }
 
     // If so, run handlers
