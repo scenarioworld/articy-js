@@ -338,6 +338,12 @@ export interface GameIterationConfig {
   stopAtTypes: string[];
 
   /**
+   * Any node containing these features will be considered "terminal"
+   * as if its template were contained in @see stopAtTypes above.
+   */
+  stopAtFeatures?: string[];
+
+  /**
    * Called on notes that match stopAtTypes. Customizes how the stop is handled.
    */
   customStopHandler?: (
@@ -445,9 +451,15 @@ export function basicNextFlowState(
 
 function shouldStopAt(
   node: ArticyObject<ArticyObjectProps>,
-  stopAtTypes: string[]
+  config: GameIterationConfig
 ) {
-  if (stopAtTypes.filter(t => node.is(t)).length > 0) {
+  if (config.stopAtTypes.filter(t => node.is(t)).length > 0) {
+    return true;
+  } else if (
+    node.template &&
+    config.stopAtFeatures &&
+    config.stopAtFeatures.filter(f => f in node.template!).length > 0
+  ) {
     return true;
   }
   return false;
@@ -502,7 +514,7 @@ export function startupGameFlowState(
   };
 
   // Check if it's a valid starting point
-  if (shouldStopAt(node, config.stopAtTypes)) {
+  if (shouldStopAt(node, config)) {
     initial.turn++;
     return [initial, node];
   }
@@ -765,7 +777,7 @@ export function collectBranches(
     branch.path.push(node.id);
 
     // Check if we're ready to stop
-    if (shouldStopAt(node, config.stopAtTypes)) {
+    if (shouldStopAt(node, config)) {
       // Check if there's custom stop logic for this node
       if (config.customStopHandler) {
         const behaviour = config.customStopHandler(node, visits, GetState());
