@@ -2752,6 +2752,48 @@
           }
         },
         {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_F84306E9",
+            "Id": "0x01000000000001B2",
+            "Parent": "0x0300000043CE43F7",
+            "MenuText": "NO CHILDREN",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "Color": {
+              "r": 0.784313738,
+              "g": 0.8862745,
+              "b": 0.905882359
+            },
+            "Text": "I HAVE NO CHILDREN",
+            "ExternalId": "",
+            "Position": {
+              "x": -200.0,
+              "y": 750.0
+            },
+            "ZIndex": 25.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 4165142249,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000001B5",
+                "Owner": "0x01000000000001B2"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000001B6",
+                "Owner": "0x01000000000001B2"
+              }
+            ]
+          }
+        },
+        {
           "Type": "Hub",
           "Properties": {
             "TechnicalName": "Hub_ECE45173",
@@ -3024,6 +3066,11 @@
             "Id": "0x01000000000001AC",
             "TechnicalName": "Hub_ECE45173",
             "Type": "Hub"
+          },
+          {
+            "Id": "0x01000000000001B2",
+            "TechnicalName": "DFr_F84306E9",
+            "Type": "DialogueFragment"
           }
         ]
       },

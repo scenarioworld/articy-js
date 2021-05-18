@@ -57,6 +57,22 @@ describe('Basic iteration configuration', () => {
       [0, 1, 2, 3, 4].sort()
     );
   });
+
+  test('Merging when the initial state has no branches', () => {
+    // Startup
+    const [iter] = startupGameFlowState(TestDB, '0x01000000000001B2', config);
+
+    // Merge another node with children in
+    const mergedId = '0x01000000000001AC';
+    const mergedIter = mergeGameFlowState(TestDB, iter, config, mergedId);
+
+    // Make sure all branches have valid indicies that start at 0
+    let i = 0;
+    for (const branch of mergedIter.branches) {
+      expect(branch.index).toBe(i);
+      i++;
+    }
+  });
 });
 
 describe('A flow with terminal branches', () => {

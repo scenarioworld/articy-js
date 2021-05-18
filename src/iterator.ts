@@ -676,7 +676,10 @@ export function mergeGameFlowState(
   const [newStartupState] = startupGameFlowState(db, start, config, state);
 
   // Now, we need to merge the states. Find the highest branch number of our existing state
-  const maxBranchIndex = Math.max(...state.branches.map(b => b.index));
+  const maxBranchIndex =
+    state.branches.length === 0
+      ? -1
+      : Math.max(...state.branches.map(b => b.index));
 
   // Merge the states
   return {
@@ -915,7 +918,10 @@ export function refreshBranches(
 
     // Append branches/pages to the iterator
     result.pages.push(page.id);
-    const maxIndex = Math.max(...result.branches.map(b => b.index));
+    const maxIndex =
+      result.branches.length === 0
+        ? -1
+        : Math.max(...result.branches.map(b => b.index));
     if (newBranchResults.pages) {
       result.pages.push(...newBranchResults.pages);
     }
