@@ -175,6 +175,19 @@ const entity = GameDB.getObject("0xFFFFFFFF", Entity);
 const assetFilename = GameDB.getAssetFilename(entity.properties.PreviewImage.Asset);
 ```
 
+## Inline Script Support
+
+Using the `processInlineScripts` function, you can evaluate scripts embedded in text to create more responsive games. The syntax for inline scripts is lifted from the Lists and Variable Printing features of Inkle's Ink language.
+
+Examples:
+
+```
+Some display text {show this the first time|show this after the first time}.
+Print out the value of a variable: {MyNamespace.MyVariable}
+Do some {~shuffling|randomizing|random rearranging} of text.
+Print text conditionally to know if a variable {MyNamespace.MyBoolean:is true|is false}.
+```
+
 ## Missing Features
 
 * Localization support (coming soon)
