@@ -326,17 +326,43 @@ export interface PackageData {
   Models: ModelData[];
 }
 
+/** All possible values of the Class string */
+export type ArticyClass =
+  | 'Enum'
+  | 'Primitive'
+  | 'ArticyObject'
+  | 'FlowFragment'
+  | 'Dialogue'
+  | 'DialogueFragment'
+  | 'Hub'
+  | 'Jump'
+  | 'Comment'
+  | 'Entity'
+  | 'Location'
+  | 'Spot'
+  | 'Zone'
+  | 'Path'
+  | 'Link'
+  | 'Asset'
+  | 'Condition'
+  | 'Instruction'
+  | 'LocationText'
+  | 'LocationImage'
+  | 'Document'
+  | 'TextObject'
+  | 'UserFolder';
+
 /** Definition of an object type exported in the JSON */
-export interface ObjectDefinition {
+interface BaseObjectDefinition {
   /** Type name */
   Type: string;
 
-  /** Base class */
-  Class: string;
+  /** Base Articy Data type */
+  Class: ArticyClass;
 }
 
 /** Definition of an enum defined in Articy */
-export interface EnumDefinition extends ObjectDefinition {
+export interface EnumDefinition extends BaseObjectDefinition {
   Class: 'Enum';
 
   /** Values for each enumeration technical name */
@@ -345,6 +371,70 @@ export interface EnumDefinition extends ObjectDefinition {
   /** Display names for each enumeration technical name */
   DisplayNames: Record<string, string>;
 }
+
+export interface PropertyDefinition {
+  /** Property name */
+  Property: string;
+
+  /** Type string */
+  Type: string;
+
+  /** User facing name */
+  DisplayName?: string;
+
+  /** Is the property value localized */
+  Localizable?: boolean;
+}
+
+/** Definition of a base type */
+export interface TypeDefinition extends BaseObjectDefinition {
+  Class: Exclude<ArticyClass, 'Enum'>;
+
+  /** Object properties */
+  Properties: PropertyDefinition[];
+}
+
+/** Definition of a property in a feature */
+export type FeaturePropertyDefinition = Required<PropertyDefinition>;
+
+/** Definition of a feature in a template */
+export interface FeatureDefinition {
+  /** Unique identifier for the feature */
+  TechnicalName: string;
+
+  /** Display name (localizable) */
+  DisplayName: string;
+
+  /** Properties in the feature */
+  Properties: FeaturePropertyDefinition[];
+}
+
+export interface TemplateDefinition {
+  /** Unique identifier for the template */
+  TechnicalName: string;
+
+  /** Display name (localizable) */
+  DisplayName: string;
+
+  /** Features in the template */
+  Features: FeatureDefinition[];
+}
+
+/** Definition of a template type */
+export interface TemplateTypeDefinition extends BaseObjectDefinition {
+  Class: Exclude<ArticyClass, 'Enum'>;
+
+  /** Base class */
+  InheritsFrom?: string;
+
+  /** Definition of the template */
+  Template: TemplateDefinition;
+}
+
+export type ObjectDefinition =
+  | EnumDefinition
+  | TypeDefinition
+  | TemplateTypeDefinition;
 
 /** Entry in the project's hierarchy */
 export interface HierarchyEntry {

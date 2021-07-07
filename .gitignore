@@ -3,3 +3,9 @@
 node_modules
 dist
 docs
+
+# Temp files
+~*.xlsx
+
+# Articy session files
+articy/Sessions
