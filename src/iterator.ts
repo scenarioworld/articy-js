@@ -1,4 +1,4 @@
-import { ArticyObjectProps, Id } from './json';
+import { ArticyObjectProps, ConnectionProps, Id } from './json';
 import { Database } from './database';
 import { BaseFlowNode } from './flowTypes';
 import { ArticyObjectCreator, NullId } from './object';
@@ -348,6 +348,7 @@ export interface GameIterationConfig {
    */
   customStopHandler?: (
     node: BaseFlowNode,
+    connections: ConnectionProps[],
     visits: Readonly<VisitSet>,
     state?: Readonly<ApplicationState>
   ) => CustomStopType | void;
@@ -389,15 +390,19 @@ export function getFlowStateChildren(
       state.last,
       state.shadowing ?? false
     );
-    if (child) {
-      children.push(child);
+    if (child && child[0]) {
+      children.push(child[0]);
     }
   }
 
   return children;
 }
 
-type BasicFlowIterationResult = [SimpleFlowState, BaseFlowNode | undefined];
+type BasicFlowIterationResult = [
+  SimpleFlowState,
+  BaseFlowNode | undefined,
+  ConnectionProps | undefined
+];
 type GameIterationResult = [GameFlowState, BaseFlowNode | undefined];
 
 /**
@@ -415,7 +420,7 @@ export function basicNextFlowState(
 ): BasicFlowIterationResult {
   // Nowhere to go. We have no ID.
   if (!state.id) {
-    return [state, undefined];
+    return [state, undefined, undefined];
   }
 
   // Get current node
@@ -430,22 +435,26 @@ export function basicNextFlowState(
   );
 
   // Nowhere to go.
-  if (!next) {
+  if (!next || !next[0]) {
     return [
       { id: null, last: null, variables: {}, shadowing: state.shadowing },
+      undefined,
       undefined,
     ];
   }
 
+  const [nextNode, conn] = next;
+
   // Create new state
   return [
     {
-      id: next.properties.Id,
+      id: nextNode.properties.Id,
       last: state.id,
       variables: state.variables,
       shadowing: state.shadowing,
     },
-    next,
+    nextNode,
+    conn,
   ];
 }
 
@@ -646,7 +655,7 @@ export function advanceGameFlowState(
   // SPECIAL: Advancement, skip ahead to the next branch
   if (
     newFlowState.branches.length > 0 &&
-    config.customStopHandler?.(curr, newFlowState.visits, GetState()) ===
+    config.customStopHandler?.(curr, [], newFlowState.visits, GetState()) ===
       CustomStopType.Advance
   ) {
     return advanceGameFlowState(db, newFlowState, config, 0);
@@ -733,7 +742,8 @@ export function collectBranches(
   branch?: FlowBranch,
   index = 0,
   direction = -1,
-  node?: BaseFlowNode
+  node?: BaseFlowNode,
+  prevConnections: ConnectionProps[] = []
 ): CollectionResult {
   // No valid ID? Return nothing.
   if (!iter.id) {
@@ -758,6 +768,9 @@ export function collectBranches(
     iter.shadowing ?? false
   );
 
+  // Keep track of connections we've taken
+  const connections = [...prevConnections];
+
   // Travel this route as long as there is only one child
   while (branches === 1 || direction >= 0) {
     // Check for shadowing
@@ -767,8 +780,19 @@ export function collectBranches(
     }
 
     // Move to that child
-    [iter, node] = basicNextFlowState(db, iter, direction, visits);
+    let nextConnection: ConnectionProps | undefined;
+    [iter, node, nextConnection] = basicNextFlowState(
+      db,
+      iter,
+      direction,
+      visits
+    );
     direction = -1;
+
+    // If our last valid connection is now undefined, restore it.
+    if (nextConnection) {
+      connections.push(nextConnection);
+    }
 
     // If no node exists, this is a dead end
     if (!node) {
@@ -783,7 +807,12 @@ export function collectBranches(
     if (shouldStopAt(node, config)) {
       // Check if there's custom stop logic for this node
       if (config.customStopHandler) {
-        const behaviour = config.customStopHandler(node, visits, GetState());
+        const behaviour = config.customStopHandler(
+          node,
+          connections,
+          visits,
+          GetState()
+        );
 
         // Default behaviour. Return branch and stop.
         if (
@@ -873,7 +902,17 @@ export function collectBranches(
 
     result = merge(
       result,
-      collectBranches(db, { ...iter }, config, visits, forked, index, i, node)
+      collectBranches(
+        db,
+        { ...iter },
+        config,
+        visits,
+        forked,
+        index,
+        i,
+        node,
+        connections
+      )
     );
 
     // Update index
