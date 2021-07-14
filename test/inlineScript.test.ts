@@ -1,6 +1,6 @@
 import { Database } from '../src/database';
 import { ExecuteContext } from '../src/flowTypes';
-import { processInlineScripts } from '../src/script';
+import { processInlineScripts } from '../src/inline';
 import { Variable, VariableStore } from '../src/variables';
 
 const mockDatabase = ({
@@ -303,4 +303,32 @@ describe('Printing expressions', () => {
       )
     ).toBe('HELLO');
   });
+});
+
+test('Multiple lists in one string', () => {
+  expect(
+    processInlineScripts(
+      '{A|B} is {C|D}',
+      executionContext(0),
+      caller,
+      mockDatabase
+    )
+  ).toBe('A is C');
+  expect(
+    processInlineScripts(
+      '{A|B} is {C|D}',
+      executionContext(1),
+      caller,
+      mockDatabase
+    )
+  ).toBe('B is D');
+});
+
+test('List in a list', () => {
+  expect(
+    processInlineScripts('{A|{B|C}}', executionContext(0), caller, mockDatabase)
+  ).toBe('A');
+  expect(
+    processInlineScripts('{A|{B|C}}', executionContext(1), caller, mockDatabase)
+  ).toBe('C');
 });

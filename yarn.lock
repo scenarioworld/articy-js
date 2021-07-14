@@ -6443,6 +6443,11 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+peggy@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/peggy/-/peggy-1.2.0.tgz#657ba45900cbef1dc9f52356704bdbb193c2021c"
+  integrity sha512-PQ+NKpAobImfMprYQtc4Egmyi29bidRGEX0kKjCU5uuW09s0Cthwqhfy7mLkwcB4VcgacE5L/ZjruD/kOPCUUw==
+
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
@@ -8347,6 +8352,13 @@ ts-jest@^25.3.1:
     mkdirp "0.x"
     semver "6.x"
     yargs-parser "18.x"
+
+ts-pegjs@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ts-pegjs/-/ts-pegjs-1.1.1.tgz#992d722322d2fd3fe382cb4a830752607eb9172b"
+  integrity sha512-8mjctiNMY0q0YyLAykkaxZnKo6Y3LDL7ncpvrWZsdqO9ZwykUYDsYQmSOAvKXOs5l6FmQsbzMJkRCP49aj59xQ==
+  dependencies:
+    peggy "^1.2.0"
 
 ts-pnp@^1.1.6:
   version "1.2.0"

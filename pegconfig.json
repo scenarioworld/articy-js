@@ -1,0 +1,14 @@
+{
+    "returnTypes": { 
+        "Text": "string",
+        "EmbedText": "string",
+        "Arguments": "string[]",
+        "Expression": "string",
+        "Condition": "{ expr: string; }",
+        "Type": "SequenceEmbedType | ExprEmbedType",
+        "InlineEmbed": "string",
+        "Embed": "string",
+        "Source": "string",
+        "EmbedSource": "string"
+    }
+}
