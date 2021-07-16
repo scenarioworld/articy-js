@@ -40,8 +40,8 @@ export class BaseFlowNode<
     _branchIndex: number,
     _last: Id | null,
     _shadowing: boolean
-  ): BaseFlowNode | undefined {
-    return undefined;
+  ): [BaseFlowNode | undefined, ConnectionProps | undefined] {
+    return [undefined, undefined];
   }
 
   /**
@@ -84,15 +84,15 @@ function nextFromConnections(
   db: Database,
   branchIndex: number,
   connections: ConnectionProps[]
-): BaseFlowNode | undefined {
+): [BaseFlowNode | undefined, ConnectionProps | undefined] {
   // If we have no connections, that's the end
   if (connections.length === 0) {
-    return undefined;
+    return [undefined, undefined];
   }
 
   // No simple movement
   if (branchIndex === -1 && connections.length > 1) {
-    return undefined;
+    return [undefined, undefined];
   }
 
   // Make sure it's in bounds
@@ -102,11 +102,14 @@ function nextFromConnections(
 
   // Bounds check
   if (branchIndex >= connections.length) {
-    return undefined;
+    return [undefined, undefined];
   }
 
   // Go to target pin
-  return db.getObject(connections[branchIndex].TargetPin, BaseFlowNode);
+  return [
+    db.getObject(connections[branchIndex].TargetPin, BaseFlowNode),
+    connections[branchIndex],
+  ];
 }
 
 /**
@@ -142,7 +145,7 @@ export class OutputPin extends BasePin {
     branchIndex: number,
     _last: Id | null,
     shadowing: boolean
-  ): BaseFlowNode | undefined {
+  ): [BaseFlowNode | undefined, ConnectionProps | undefined] {
     // Evaluate instructions
     runScript(
       this.properties.Text,
@@ -184,8 +187,8 @@ export class OutputPin extends BasePin {
  */
 @ArticyType('InputPin')
 export class InputPin extends BasePin {
-  next(): BaseFlowNode | undefined {
-    return this.db.getObject(this.properties.Owner, BaseFlowNode);
+  next(): [BaseFlowNode | undefined, ConnectionProps | undefined] {
+    return [this.db.getObject(this.properties.Owner, BaseFlowNode), undefined];
   }
 
   numBranches(
@@ -251,12 +254,12 @@ export class BasePinnedObject<
 export class Hub<
   TemplateType extends TemplateProps = TemplateProps
 > extends BasePinnedObject<PinnedObjectProps, TemplateType> {
-  next(): BaseFlowNode | undefined {
+  next(): [BaseFlowNode | undefined, ConnectionProps | undefined] {
     if (this.OutputPins.length === 0) {
-      return undefined;
+      return [undefined, undefined];
     }
 
-    return this.OutputPins[0];
+    return [this.OutputPins[0], undefined];
   }
 
   numBranches(): number {
@@ -281,7 +284,7 @@ export class Condition<
     _branchIndex: number,
     _last: Id | null,
     shadowing: boolean
-  ): BaseFlowNode | undefined {
+  ): [BaseFlowNode | undefined, ConnectionProps | undefined] {
     // Return 0 or 1 based on a script
     const result = runScript(
       this.properties.Expression,
@@ -292,7 +295,7 @@ export class Condition<
       true,
       shadowing
     );
-    return this.OutputPins[result ? 0 : 1];
+    return [this.OutputPins[result ? 0 : 1], undefined];
   }
 
   // Always one branch. True or False.
@@ -313,7 +316,7 @@ export class Instruction<
     _branchIndex: number,
     _last: Id | null,
     shadowing: boolean
-  ): BaseFlowNode | undefined {
+  ): [BaseFlowNode | undefined, ConnectionProps | undefined] {
     // Run script
     runScript(
       this.properties.Expression,
@@ -326,7 +329,7 @@ export class Instruction<
     );
 
     // Go to first pin
-    return this.OutputPins[0];
+    return [this.OutputPins[0], undefined];
   }
 
   // Always one branch.
@@ -364,9 +367,9 @@ export class Jump<
     this.TargetPin = args.db.getObject(this.properties.TargetPin, InputPin);
   }
 
-  next(): BaseFlowNode | undefined {
+  next(): [BaseFlowNode | undefined, ConnectionProps | undefined] {
     // Go to the target pin
-    return this.TargetPin;
+    return [this.TargetPin, undefined];
   }
 
   // One branch as long as we have a target
@@ -392,11 +395,11 @@ export class DialogueFragment<
     this.Speaker = args.db.getObject(this.properties.Speaker, Entity);
   }
 
-  next(): BaseFlowNode | undefined {
+  next(): [BaseFlowNode | undefined, ConnectionProps | undefined] {
     if (this.OutputPins.length === 0) {
-      return undefined;
+      return [undefined, undefined];
     }
-    return this.OutputPins[0];
+    return [this.OutputPins[0], undefined];
   }
 
   numBranches(): number {
@@ -420,9 +423,9 @@ export class BaseFragment<
     _context: ExecuteContext,
     branchIndex: number,
     last: Id
-  ): BaseFlowNode | undefined {
+  ): [BaseFlowNode | undefined, ConnectionProps | undefined] {
     if (this.InputPins.length === 0) {
-      return undefined;
+      return [undefined, undefined];
     }
 
     // Find the pin we came in from
@@ -433,15 +436,15 @@ export class BaseFragment<
 
     // If we can't... die?
     if (!inputPinToFollow) {
-      return undefined;
+      return [undefined, undefined];
     }
 
     // SPECIAL: Input pin goes nowhere, go to output pin
     if (inputPinToFollow.connections().length === 0) {
       if (this.OutputPins.length === 0) {
-        return undefined;
+        return [undefined, undefined];
       }
-      return this.OutputPins[0];
+      return [this.OutputPins[0], undefined];
     }
 
     // Next connection from pin

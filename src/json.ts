@@ -76,14 +76,23 @@ export interface SizeData {
   h: number;
 }
 
+/** Sized box. Has position and size. */
+export type BoxData = PointData & SizeData;
+
+/** Something with a view box */
+export interface HasViewBoxData {
+  /** Bounds to use for preview thumbnail */
+  ViewBox: BoxData;
+}
+
 /** Preview Image Data */
-export interface PreviewImageData {
+export type PreviewImageData = {
   /** Asset for this image. Set to the Null ID if no image is set. */
   Asset: Id;
 
   /** Storage mode. AFAIK FromAsset is the only valid value. */
   Mode: 'FromAsset';
-}
+} & HasViewBoxData;
 
 /** Has a colour */
 export interface ColorProps {
@@ -288,6 +297,9 @@ export interface LocationLinkProps extends ArticyObjectProps, ColorProps {
 export interface AssetProps extends ArticyObjectProps, DisplayNameProps {
   /** Name of the original filename on disk */
   Filename: string;
+
+  /** Preview thumbnail information */
+  PreviewImage: HasViewBoxData;
 }
 
 /** Model definition of an object. Includes its type, properties, and templates. */

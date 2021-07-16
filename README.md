@@ -66,11 +66,35 @@ const stateWithRefreshedBranches = refreshBranches(GameDB, nextState, iterationC
 
 ### Script Functions
 
+You can easily register new functions for use in Expresso scripts. They can take any number of arguments of the supported types (number, string, boolean).
+
 ```js
 // Register a new IsGreater function that takes two arguments
 RegisterScriptFunction("IsGreater", (context, arg1, arg2) => {
     return arg1 > arg2;
 });
+```
+
+The first argument past to each function handler is a `context` object with information about the current execution. This is useful if you want the function's behaviour to change based on parent node, for example.
+
+```js
+// Context passed as the first argument to every script method
+type Context = {
+  /** Id of the caller (or NullId if called outside a node) */
+  caller: Id;
+
+  /** Visit information (includes indicies and counts) */
+  visits: VisitSet;
+
+  /** Variable state */
+  variables: VariableStore;
+
+  /** Loaded Articy Database */
+  db: Database;
+
+  /** Custom application state (see Redux Middleware documentation) */
+  state: Readonly<ApplicationState> | undefined;
+};
 ```
 
 ### Object Types
@@ -105,6 +129,16 @@ RegisterFeatureExecutionHandler("MusicSettings", (db, feature, node, state) => {
 ```
 
 If you're using Typescript, you can type the `feature` argument to an interface matching the spec in Articy.
+
+## Expresso Script Support with Additional Functions
+
+This package supports all the built-in functions documented at [Articy Unity Plugin](https://www.articy.com/articy-importer/unity/html/howto_script.htm) with the exception of setProp due to some implementation complications (but I'm working on it). This includes the helper objects of `speaker` and `self` where they are appropriate.
+
+We also include two extra built-in methods: `once()` and `limit(n)`.
+
+`once()` will return true if and only if the owning node has NOT been visited. It's a great way to make choices that can only be chosen once. Simply add `once()` to their input pin.
+
+`limit(n)` works similarly, but only returns true if the node has been visited less than `n` times.
 
 ## Redux Middleware
 
@@ -186,8 +220,14 @@ Some display text {show this the first time|show this after the first time}.
 Print out the value of a variable: {MyNamespace.MyVariable}
 Do some {~shuffling|randomizing|random rearranging} of text.
 Print text conditionally to know if a variable {MyNamespace.MyBoolean:is true|is false}.
+Make switch statements { 
+    - MyNamespace.MyInteger == 3: that work.
+    - MyNamespace.MyInteger == 4: that work well!
+    - else: that are great :)
+}
 ```
 
 ## Missing Features
 
 * Localization support (coming soon)
+* setProp()
