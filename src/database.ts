@@ -15,6 +15,7 @@ import { ArticyCreatorArguments, ArticyObjectCreator } from './object';
 import { VerifyRegisteredScriptMethod } from './script';
 import { Variable, VariableNamespace, VariableStore } from './variables';
 import { TemplateExtension } from './types';
+import { Localization } from './localization';
 
 // Resolve an asset to a real path
 type ResolveAssetPath = (assetRef: string) => string | null | undefined;
@@ -47,6 +48,9 @@ export class Database {
 
   /** Unique database instance ID */
   public readonly guid: string;
+
+  /** Localization provider */
+  public readonly localization: Localization = new Localization();
 
   constructor(data: ArticyData, assetResolver?: ResolveAssetPath) {
     // Store articy database

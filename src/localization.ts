@@ -10,21 +10,34 @@ import {
 
 type Language = Map<string, string>;
 
+/**
+ * Database of all loaded localizations.
+ */
 export class Localization {
   private readonly languages: Map<string, Language> = new Map();
   private activeLanguage: string | undefined;
 
+  /** Returns the currently active language (ex. 'en') */
   public get active() {
     return this.activeLanguage;
   }
+
+  /** Sets the active language. Will throw an exception if a localization file is not loaded for that language. */
   public set active(lang: string | undefined) {
     if (!lang || !this.languages.has(lang)) {
-      throw new Error('Invalid language.');
+      throw new Error(
+        `No language loaded called '${lang}' Can not set as active language.`
+      );
     }
 
     this.activeLanguage = lang;
   }
 
+  /**
+   * Load a new langauge into the database
+   * @param language Language name (ex. 'en')
+   * @param filename File to load
+   */
   public async load(language: string, filename: string) {
     // Load workbook
     const workbook = new Excel.Workbook();
@@ -35,14 +48,25 @@ export class Localization {
 
     // Create language map
     const map = new Map<string, string>();
-    stringWorksheet.getColumn(0).eachCell((cell, row) => {
-      map.set(cell.text, stringWorksheet.getCell(row, cell.col).text);
+    stringWorksheet.getColumn(1).eachCell((cell, row) => {
+      map.set(cell.text, stringWorksheet.getCell(row, cell.col + 1).text);
     });
 
     // Save
     this.languages.set(language, map);
+
+    // Set active language if none set
+    if (this.activeLanguage === undefined) {
+      this.activeLanguage = language;
+    }
   }
 
+  /**
+   * Localizes a string into a language
+   * @param id Localization ID
+   * @param language Language to localize into. If not set, use the current @see active language.
+   * @returns Localized string
+   */
   public get(id: string, language?: string): string | undefined {
     const lang = language ?? this.activeLanguage;
     if (!lang) {
