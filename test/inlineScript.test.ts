@@ -332,3 +332,57 @@ test('List in a list', () => {
     processInlineScripts('{A|{B|C}}', executionContext(1), caller, mockDatabase)
   ).toBe('C');
 });
+
+test('Multiline stopping list', () => {
+  const list = '{stopping:\n- my value\n\n - my other value\n}';
+  expect(
+    processInlineScripts(list, executionContext(0), caller, mockDatabase)
+  ).toBe('my value');
+  expect(
+    processInlineScripts(list, executionContext(1), caller, mockDatabase)
+  ).toBe('my other value');
+  expect(
+    processInlineScripts(list, executionContext(2), caller, mockDatabase)
+  ).toBe('my other value');
+});
+
+test('Multiline cycle list', () => {
+  const list = '{cycle:\n- my value\n\n - my other value\n}';
+  expect(
+    processInlineScripts(list, executionContext(0), caller, mockDatabase)
+  ).toBe('my value');
+  expect(
+    processInlineScripts(list, executionContext(1), caller, mockDatabase)
+  ).toBe('my other value');
+  expect(
+    processInlineScripts(list, executionContext(2), caller, mockDatabase)
+  ).toBe('my value');
+});
+
+test('Multiline switch statement', () => {
+  const sw =
+    '{\n- MyVar.i == 0: 0\n- MyVar.i == 1 : 1\n- MyVar.i == 2: 2\n- else: invalid\n}';
+  for (let i = 0; i < 5; i++) {
+    expect(
+      processInlineScripts(
+        sw,
+        executionContext(0, 'MyVar', 'i', i),
+        caller,
+        mockDatabase
+      )
+    ).toBe(i <= 2 ? i.toString() : 'invalid');
+  }
+});
+
+test('Multiline stopping list with colons', () => {
+  const list = '{stopping:\n- my: value\n\n - my other: value\n}';
+  expect(
+    processInlineScripts(list, executionContext(0), caller, mockDatabase)
+  ).toBe('my: value');
+  expect(
+    processInlineScripts(list, executionContext(1), caller, mockDatabase)
+  ).toBe('my other: value');
+  expect(
+    processInlineScripts(list, executionContext(2), caller, mockDatabase)
+  ).toBe('my other: value');
+});

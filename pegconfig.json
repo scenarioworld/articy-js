@@ -1,14 +1,18 @@
 {
     "returnTypes": { 
         "Text": "string",
-        "EmbedText": "string",
-        "Arguments": "string[]",
+        "InlineText": "string",
+        "InlineMultilineText": "string",
+        "Arguments": "Argument[]",
+        "MultiLineArguments": "Argument[]",
         "Expression": "string",
         "Condition": "{ expr: string; }",
         "Type": "SequenceEmbedType | ExprEmbedType",
         "InlineEmbed": "string",
         "Embed": "string",
+        "MutliLineEmbed": "string",
         "Source": "string",
-        "EmbedSource": "string"
+        "InlineSource": "string",
+        "InlineMultilineSource": "string"
     }
 }

@@ -1,5 +1,5 @@
 import { Database } from './database';
-import { IParseOptions } from './inline_peggy';
+import { IParseOptions, IFileRange } from './inline_peggy';
 import { ExecuteContext } from './flowTypes';
 import { Id } from './json';
 import { runScript, runScriptRaw } from './script';
@@ -20,18 +20,25 @@ export interface IEmbedScriptParseOptions extends IParseOptions {
 export type SequenceEmbedType = { type: SequenceType };
 export type ExprEmbedType = { expr: string };
 export type EmbedType = null | ExprEmbedType | SequenceEmbedType;
+export type Argument = Partial<ExprEmbedType> & {
+  value?: string;
+  full: string;
+  location: IFileRange;
+};
 
 export function processEmbed(
   type: EmbedType,
-  alternatives: string[],
-  options: IEmbedScriptParseOptions
+  alternatives: Argument[],
+  multiline: boolean,
+  options: IEmbedScriptParseOptions,
+  expected: (desc: string, loc?: IFileRange) => void
 ): string {
   const { context, caller, db } = options;
 
   // SPECIAL CASE: If this is a stopping list with no alternates, evaluate it as a print
-  if (type === null && alternatives.length === 1) {
+  if (type === null && alternatives.length === 1 && !multiline) {
     const evaluated = runScriptRaw(
-      alternatives[0],
+      alternatives[0].full,
       options.context.variables,
       context.visits,
       caller,
@@ -40,6 +47,40 @@ export function processEmbed(
       false
     );
     return `${evaluated}`;
+  }
+
+  // SPECIAL: If this has no type we're a multi-line, evaluate as a select list
+  if (multiline && type === null) {
+    for (const arg of alternatives) {
+      // Make sure it has a condition
+      if (!arg.expr || !arg.value) {
+        expected(`a condition ending with a ':'`, arg.location);
+        return '';
+      }
+
+      // Evaluate else
+      if (arg.expr.toLowerCase().trim() === 'else') {
+        return arg.value;
+      }
+
+      // Evaluate condition
+      if (
+        runScript(
+          arg.expr,
+          context.variables,
+          context.visits,
+          caller,
+          db,
+          true,
+          false
+        )
+      ) {
+        return arg.value;
+      }
+    }
+
+    // No branches match
+    return '';
   }
 
   // No type means a stopping list
@@ -90,5 +131,5 @@ export function processEmbed(
   }
 
   // Return the appropriate argument
-  return alternatives[index];
+  return alternatives[index].full;
 }

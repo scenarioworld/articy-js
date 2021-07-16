@@ -186,6 +186,11 @@ Some display text {show this the first time|show this after the first time}.
 Print out the value of a variable: {MyNamespace.MyVariable}
 Do some {~shuffling|randomizing|random rearranging} of text.
 Print text conditionally to know if a variable {MyNamespace.MyBoolean:is true|is false}.
+Make switch statements { 
+    - MyNamespace.MyInteger == 3: that work.
+    - MyNamespace.MyInteger == 4: that work well!
+    - else: that are great :)
+}
 ```
 
 ## Missing Features
