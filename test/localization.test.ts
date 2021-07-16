@@ -1,8 +1,10 @@
 import { Database } from '../src/database';
+import { FlowFragment } from '../src/flowTypes';
 import {
   ArticyData,
   ArticyObjectProps,
   DisplayNameProps,
+  EnumDefinition,
   FeatureProps,
   ModelData,
   TemplateProps,
@@ -159,5 +161,34 @@ describe('A project with two languages: French and English', () => {
     expect(proxy.Template?.MyFeature.unlocalizedText).toBe(
       obj.Template?.MyFeature.unlocalizedText
     );
+  });
+
+  test('Database automatically proxies objects', () => {
+    const frag = database.getObject('0x010000000000010F', FlowFragment);
+    expect(frag).toBeDefined();
+    if (!frag) {
+      return;
+    }
+
+    expect(frag.properties.DisplayName).toBe('Text Node');
+  });
+
+  test('Changing language updates existing objects from database', () => {
+    const frag = database.getObject('0x010000000000010F', FlowFragment);
+    expect(frag).toBeDefined();
+    if (!frag) {
+      return;
+    }
+
+    expect(frag.properties.DisplayName).toBe('Text Node');
+    database.localization.active = 'fr';
+    expect(frag.properties.DisplayName).toBe('French Node');
+  });
+
+  test('Enum names are localized when accessed through database', () => {
+    expect(database.getEnumValueDisplayName('Sex', 1)).toBe('Female');
+    expect(
+      (database.getDefinition('Sex') as EnumDefinition)?.DisplayNames['Female']
+    ).toBe('Female');
   });
 });

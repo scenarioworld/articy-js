@@ -230,7 +230,7 @@ class LocalizationProxy implements ProxyHandler<object> {
  */
 export function LocalizeProperties<
   T extends ModelData | ArticyObjectProps | TemplateProps
->(object: T, localization: Localization, definition?: ObjectDefinition) {
+>(object: T, localization: Localization, definition?: ObjectDefinition): T {
   if ('Type' in object) {
     return new Proxy(
       object,
@@ -239,7 +239,7 @@ export function LocalizeProperties<
         LocalizableObjectType.ArticyObject,
         definition
       )
-    );
+    ) as T;
   } else if ('Id' in object) {
     return new Proxy(
       object,
@@ -248,7 +248,7 @@ export function LocalizeProperties<
         LocalizableObjectType.ArticyObjectProperties,
         definition
       )
-    );
+    ) as T;
   } else {
     return new Proxy(
       object,
@@ -257,7 +257,7 @@ export function LocalizeProperties<
         LocalizableObjectType.ArticyObjectTemplate,
         definition
       )
-    );
+    ) as T;
   }
 }
 
@@ -267,19 +267,19 @@ export function LocalizeProperties<
  * @param localization Localization provider
  * @returns definition wrapped in a proxy
  */
-export function LocalizeDefinition(
-  definition: EnumDefinition | ObjectDefinition,
+export function LocalizeDefinition<D extends EnumDefinition | ObjectDefinition>(
+  definition: D,
   localization: Localization
-) {
+): D {
   if ('DisplayNames' in definition) {
     return new Proxy(
       definition,
       new LocalizationProxy(localization, LocalizableObjectType.EnumDefinition)
-    );
+    ) as D;
   } else {
     return new Proxy(
       definition,
       new LocalizationProxy(localization, LocalizableObjectType.Definition)
-    );
+    ) as D;
   }
 }

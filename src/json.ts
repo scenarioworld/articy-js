@@ -16,7 +16,10 @@ export interface Project {
 /** Root project settings */
 export interface Settings {
   /** "True" if localization mode is enabled (strings stored in separate xlsx instead of in JSON) */
-  set_Localization: string;
+  set_Localization: 'True' | 'False';
+
+  /** Language that was used when exporting with localization. */
+  set_UsedLanguage?: string;
 
   /** Exporter version */
   ExportVersion: string;
@@ -500,6 +503,9 @@ export interface ScriptMethodDef {
 export interface ArticyData {
   /** Project information */
   Project: Project;
+
+  /** Settings */
+  Settings: Settings;
 
   /** Packages exported in this file */
   Packages: PackageData[];

@@ -8,6 +8,7 @@ import {
   HierarchyEntry,
   Id,
   ModelData,
+  ObjectDefinition,
   TemplateProps,
 } from './json';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,7 +16,11 @@ import { ArticyCreatorArguments, ArticyObjectCreator } from './object';
 import { VerifyRegisteredScriptMethod } from './script';
 import { Variable, VariableNamespace, VariableStore } from './variables';
 import { TemplateExtension } from './types';
-import { Localization } from './localization';
+import {
+  Localization,
+  LocalizeDefinition,
+  LocalizeProperties,
+} from './localization';
 
 // Resolve an asset to a real path
 type ResolveAssetPath = (assetRef: string) => string | null | undefined;
@@ -32,10 +37,7 @@ export class Database {
   private readonly _technical: Map<string, Id> = new Map();
 
   /** Map of type names to base class names. Useful if the Articy project uses a template that isn't defined in JS */
-  private readonly _classes: Map<string, string> = new Map();
-
-  /** Map of enumerations defined in this database */
-  private readonly _enums: Map<string, EnumDefinition> = new Map();
+  private readonly _definitions: Map<string, ObjectDefinition> = new Map();
 
   /** Map of objects to their hierarchy entries */
   private readonly _hierarchy: Map<Id, HierarchyEntry> = new Map();
@@ -52,20 +54,18 @@ export class Database {
   /** Localization provider */
   public readonly localization: Localization = new Localization();
 
+  /** Is this project using localization */
+  private readonly _isLocalized: boolean;
+
   constructor(data: ArticyData, assetResolver?: ResolveAssetPath) {
     // Store articy database
     this.guid = uuidv4();
     this._data = data;
     this._assetResolver = assetResolver;
 
-    // Iterate object definitions and create a map of type names to base class names
+    // Iterate object definitions and create a map of type names to definitions
     for (const def of this._data.ObjectDefinitions) {
-      // Special: cache enums in a lookup
-      if (def.Class === 'Enum') {
-        this._enums.set(def.Type, def as EnumDefinition);
-      } else {
-        this._classes.set(def.Type, def.Class);
-      }
+      this._definitions.set(def.Type, def);
     }
 
     // Iterate packages
@@ -104,6 +104,9 @@ export class Database {
 
     // Iterate hierarchy
     this.processHierarchy(this._data.Hierarchy);
+
+    // Track localization
+    this._isLocalized = this._data.Settings.set_Localization === 'True';
   }
 
   private processHierarchy(entry: HierarchyEntry): void {
@@ -131,8 +134,8 @@ export class Database {
     value: number
   ): string | undefined {
     // Lookup enum
-    const def = this._enums.get(type);
-    if (!def) {
+    const def = this._definitions.get(type);
+    if (!def || def.Class !== 'Enum') {
       return undefined;
     }
 
@@ -140,12 +143,27 @@ export class Database {
     for (const key of Object.keys(def.Values)) {
       // We've found it!
       if (def.Values[key] === value) {
-        return def.DisplayNames[key];
+        return this._isLocalized
+          ? this.localization.get(def.DisplayNames[key])
+          : def.DisplayNames[key];
       }
     }
 
     // Failure
     return undefined;
+  }
+
+  /**
+   * Gets the definition of a given type
+   * @param type Type name
+   * @returns Definition from Articy JSON
+   */
+  public getDefinition(type: string): ObjectDefinition | undefined {
+    const def = this._definitions.get(type);
+    if (!def) {
+      return undefined;
+    }
+    return this.localizeDefinition(def);
   }
 
   /**
@@ -271,7 +289,7 @@ export class Database {
       }
 
       // Check if other is the base of type
-      if (this._classes.get(type) === otherType) {
+      if (this._definitions.get(type)?.Class === otherType) {
         return true;
       }
     }
@@ -288,7 +306,7 @@ export class Database {
       return undefined;
     }
 
-    return def.Properties as PropsType;
+    return this.localizeModel(def).Properties as PropsType;
   }
 
   /**
@@ -301,7 +319,7 @@ export class Database {
     const results: PropsType[] = [];
     for (const [, model] of this._lookup) {
       if (model.Type === type) {
-        results.push(model.Properties as PropsType);
+        results.push(this.localizeModel(model).Properties as PropsType);
       }
     }
     return results;
@@ -340,7 +358,7 @@ export class Database {
     }
 
     // Get definition
-    const def = this._lookup.get(id);
+    let def = this._lookup.get(id);
 
     // If not found, return
     if (!def) {
@@ -352,6 +370,9 @@ export class Database {
     if (!creator) {
       return undefined;
     }
+
+    // Localize model
+    def = this.localizeModel(def);
 
     // Create construction arguments
     const args: ArticyCreatorArguments<ArticyObjectProps, TemplateProps> = {
@@ -382,12 +403,12 @@ export class Database {
     }
 
     // If none, try its base class
-    const base = this._classes.get(name);
+    const base = this._definitions.get(name);
     if (!base) {
       return undefined;
     }
 
-    return Database.RegisteredTypes.get(base);
+    return Database.RegisteredTypes.get(base.Class);
   }
 
   /**
@@ -401,7 +422,9 @@ export class Database {
     const results: ModelData<PropType, TemplateType>[] = [];
     for (const model of this._lookup.values()) {
       if (this.isType(model.Type, type)) {
-        results.push(model as ModelData<PropType, TemplateType>);
+        results.push(
+          this.localizeModel(model as ModelData<PropType, TemplateType>)
+        );
       }
     }
     return results;
@@ -425,7 +448,9 @@ export class Database {
     for (const model of this._lookup.values()) {
       if (model.Template && featureName in model.Template) {
         results.push(
-          model as ModelData<ArticyObjectProps, { FeatureName: Feature }>
+          this.localizeModel(
+            model as ModelData<ArticyObjectProps, { FeatureName: Feature }>
+          )
         );
       }
     }
@@ -530,6 +555,33 @@ export class Database {
     ArticyObjectCreator,
     string
   > = new Map();
+
+  private localizeModel<P extends ArticyObjectProps, T extends TemplateProps>(
+    modelDef: ModelData<P, T>
+  ): ModelData<P, T> {
+    // Do nothing if not localized
+    if (!this._isLocalized) {
+      return modelDef;
+    }
+
+    // Get definition
+    const def = this._definitions.get(modelDef.Type);
+
+    // Create proxy
+    return LocalizeProperties(modelDef, this.localization, def);
+  }
+
+  private localizeDefinition<D extends ObjectDefinition | EnumDefinition>(
+    definition: D
+  ): D {
+    // Do nothing if not localized
+    if (!this._isLocalized) {
+      return definition;
+    }
+
+    // Localize definition
+    return LocalizeDefinition(definition, this.localization);
+  }
 }
 
 /**
