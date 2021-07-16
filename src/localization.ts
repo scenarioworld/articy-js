@@ -203,7 +203,7 @@ class LocalizationProxy implements ProxyHandler<object> {
       case LocalizableObjectType.ArticyObjectFeature:
         // Check if the property is localizable and if so localize it
         if (typeof prop === 'string' && this.localizedProperties.has(prop)) {
-          return this.localization.get(prop);
+          return this.localization.get(value);
         }
         break;
       case LocalizableObjectType.Definition:
