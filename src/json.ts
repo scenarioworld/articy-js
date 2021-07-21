@@ -424,6 +424,7 @@ export interface FeatureDefinition {
   Properties: FeaturePropertyDefinition[];
 }
 
+/** Definition for a template, including specifications for all features included within it */
 export interface TemplateDefinition {
   /** Unique identifier for the template */
   TechnicalName: string;

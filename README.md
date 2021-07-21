@@ -4,6 +4,15 @@ A Javascript library for loading and executing interactive stories written in [A
 
 Note that while this package features full feature parity with the Unity plguin, it doesn't share the same API.
 
+## Installation
+
+Just install using `npm` or `yarn` and you're ready to go.
+
+```
+yarn add articy-node
+npm install articy-node --save-dev
+```
+
 ## Loading Data from Articy
 
 First we'll see how to get data from your Articy project into your Javascript application or game.
@@ -16,7 +25,7 @@ If you're exporting a project using localization, make sure the accompanying `.x
 
 ### Creating and Loading a Database
 
-To load the data you've exported, you'll create an instance of the `Database` class. The `Database` object is read-only and you will only ever need to create one instance of it per story. For most projects, this'll mean you only need one.
+To load the data you've exported, you'll create an instance of the [[Database]] class. The `Database` object is read-only and you will only ever need to create one instance of it per story. For most projects, this'll mean you only need one.
 
 If you're using Javscript modules, the best way to manage these instances is to initialize them in their own module and export them as the default export.
 
@@ -172,11 +181,12 @@ The first argument past to each function handler is a `context` object with info
 
 This package supports all the built-in functions documented at [Articy Unity Plugin](https://www.articy.com/articy-importer/unity/html/howto_script.htm) with the exception of setProp due to some implementation complications (but I'm working on it). This includes the helper objects of `speaker` and `self` where they are appropriate.
 
-We also include two extra built-in methods: `once()` and `limit(n)`.
+We also include four extra built-in methods.
 
-`once()` will return true if and only if the owning node has NOT been visited. It's a great way to make choices that can only be chosen once. Simply add `once()` to their input pin.
-
-`limit(n)` works similarly, but only returns true if the node has been visited less than `n` times.
+* `once()` will return true if and only if the owning node has NOT been visited. It's a great way to make choices that can only be chosen once. Simply add `once()` to their input pin.
+* `limit(n)` works similarly, but only returns true if the node has been visited less than `n` times.
+* `visited()` returns true if the current node has been visited before.
+* `visits()` returns the number of times the current node has been visited.
 
 ### Redux Middleware
 

@@ -11,7 +11,13 @@ import {
 type Language = Map<string, string>;
 
 /**
- * Database of all loaded localizations.
+ * Responsible for loading and managing localization data from .xslx files exported alongside the Articy JSON.
+ *
+ * This class is automatically instantiated when creating a [[Database]]. Simply use [[Database.localization]].
+ *
+ * Load new .xlsx files with [[load]] and set the active language with [[active]].
+ *
+ * The [[Database]] will automatically localize any objects returned by it using the [[active]] language, but you can also use [[get]] to manually localize a string.
  */
 export class Localization {
   private readonly languages: Map<string, Language> = new Map();

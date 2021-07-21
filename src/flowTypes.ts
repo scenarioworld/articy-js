@@ -13,18 +13,27 @@ import {
 } from './json';
 import { Database, ArticyType } from './database';
 import { ArticyCreatorArguments } from './object';
-import { RegisterScriptFunction, runScript } from './script';
+import { runScript } from './script';
 import { ArticyObject, Entity } from './types';
 import { VariableStore } from './variables';
 import { VisitSet } from './iterator';
 
+/**
+ * Passed to methods like [[BaseFlowNode.next]], [[BaseFlowNode.numBranches]], and [[BaseFlowNode.execute]] to provide necessary context for execution calculations.
+ */
 export type ExecuteContext = {
+  /** Current variable store */
   variables: VariableStore;
+
+  /** Current node visit count/index information */
   visits: VisitSet;
 };
 
 /**
  * Base class for all flow nodes
+ * @typeparam PropertiesType Property block interface
+ * @typeparam TemplateType Template block interface
+ * @category Flow Types
  */
 export class BaseFlowNode<
   PropertiesType extends FlowObjectProps = FlowObjectProps,
@@ -33,7 +42,8 @@ export class BaseFlowNode<
   /**
    * Returns the next node along the given branch index
    * @param branchIndex Branch index to follow (-1 means default)
-   * @param last Id of the node we were at least (or null if none)
+   * @param last Id of the previous node (or null if none)
+   * @returns The next node along the branch (or undefined) and any Incoming/Outgoing Connection that was used to get there.
    */
   next(
     _context: ExecuteContext,
@@ -47,6 +57,7 @@ export class BaseFlowNode<
   /**
    * Returns the number of valid branches at this node
    * @param last Id of the node we were at least (or null if none)
+   * @returns Number of valid branches (so, not branches with failing conditions)
    */
   numBranches(
     _context: ExecuteContext,
@@ -113,11 +124,15 @@ function nextFromConnections(
 }
 
 /**
- * Base class for all Flow Pins
+ * Base class for all Flow Pins (see [[InputPin]] and [[OutputPin]]).
  */
 export class BasePin extends BaseFlowNode<PinProps> {
   private _connections: ConnectionProps[] | undefined;
 
+  /**
+   * Returns all Incoming or Outgoing connections to/from this pin.
+   * @returns List of connections
+   */
   public connections(): ConnectionProps[] {
     if (this._connections) {
       return this._connections;
@@ -218,6 +233,8 @@ export class InputPin extends BasePin {
 
 /**
  * Base class for all flow nodes that have input and output pins
+ * @typeparam PropertiesType Property block interface
+ * @typeparam TemplateType Template block interface
  */
 export class BasePinnedObject<
   PropertiesType extends PinnedObjectProps = PinnedObjectProps,
@@ -248,7 +265,8 @@ export class BasePinnedObject<
 }
 
 /**
- * Base Hub class
+ * Base class for all Hubs
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('Hub')
 export class Hub<
@@ -274,6 +292,7 @@ export class Hub<
 
 /**
  * Conditions that choose either their first or second output pin depending on the result of a condition script
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('Condition')
 export class Condition<
@@ -306,6 +325,7 @@ export class Condition<
 
 /**
  * Instruction that runs a script before moving onto the next node
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('Instruction')
 export class Instruction<
@@ -356,6 +376,7 @@ export class Instruction<
 
 /**
  * Jumps to a destination node by reference
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('Jump')
 export class Jump<
@@ -382,6 +403,7 @@ export class Jump<
 
 /**
  * Fragment of dialogue spoken by an entity
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('DialogueFragment')
 export class DialogueFragment<
@@ -414,6 +436,8 @@ export class DialogueFragment<
 
 /**
  * Base class for all fragments with children
+ * @typeparam PropertiesType Property block interface
+ * @typeparam TemplateType Template block interface
  */
 export class BaseFragment<
   PropertiesType extends PinnedObjectProps,
@@ -485,7 +509,8 @@ export class BaseFragment<
 }
 
 /**
- * Flow fragment with attachments, text, and children
+ * Flow fragment with attachments, text, and children.
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('FlowFragment')
 export class FlowFragment<
@@ -494,34 +519,9 @@ export class FlowFragment<
 
 /**
  * Dialogue node with attachments, text, and children
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('Dialogue')
 export class Dialogue<
   TemplateType extends TemplateProps = TemplateProps
 > extends BaseFragment<DialogueProps, TemplateType> {}
-
-// once() method -> returns true only if the calling node has not been visted before
-RegisterScriptFunction('once', context => {
-  return (
-    !(context.caller in context.visits.counts) ||
-    context.visits.counts[context.caller] === 0
-  );
-});
-
-// limit(number) method -> returns true only if the current node has been visited less than `number` times
-RegisterScriptFunction('limit', (context, max) => {
-  // Make sure it's actually a number
-  if (typeof max !== 'number') {
-    return false;
-  }
-
-  // Check visit count
-  const count = context.visits.counts[context.caller];
-  if (count === undefined && max === 0) {
-    return false;
-  }
-  if (count === undefined || count < max) {
-    return true;
-  }
-  return false;
-});

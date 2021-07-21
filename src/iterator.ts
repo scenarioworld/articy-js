@@ -7,21 +7,21 @@ import { ArticyObject } from './types';
 import { VariableStore } from './variables';
 
 /**
- * Keeps track of the number of times a node has been visited
+ * A dictionary of node IDs to the number of times they've been visited.
  */
 export interface VisitCounts {
   [name: string]: number;
 }
 
 /**
- * Keeps track of the last turn index a node was visited
+ * A dictionary of node IDs to the turn index they were last visited.
  */
 export interface VisitIndicies {
   [name: string]: number;
 }
 
 /**
- * Keeps track of visited nodes.
+ * Keeps track of visit counts and indicies for nodes.
  */
 export interface VisitSet {
   /** Map of IDs to the number of times the node has been visited (unset = unvisited) */
@@ -35,7 +35,10 @@ export interface VisitSet {
 export const EmptyVisitSet: VisitSet = { counts: {}, indicies: {} };
 
 /**
- * Represents a basic iterator in the flow.
+ * A simple flow iterator that tracks variable values and the current node id.
+ *
+ * Only use this is you want to do low-level iteration (advancing one node at a time, no stopping, no iteration config).
+ * Generally, you should be using [[GameFlowState]].
  */
 export interface SimpleFlowState {
   /** Id of the current node */
@@ -66,7 +69,7 @@ export interface FlowBranch {
 }
 
 /**
- * Represents a branch in the flow.
+ * Wrapper for [[FlowBranch]] that resolves the path IDs into their resolved Articy Objects.
  */
 export class ResolvedBranch<
   DestinationType extends BaseFlowNode = BaseFlowNode
@@ -292,43 +295,43 @@ export const NullGameFlowState: GameFlowState = {
 };
 
 /**
- * Custom handling for iteration stops
+ * Returned by [[GameIterationConfig.customStopHandler]]. Tells the runtime to apply custom handling to a given node.
  */
 export enum CustomStopType {
   /**
-   * Normal stop. Stop here and return a new branch.
+   * Normal stop. Stop here and return a new branch. Equivilent to listing this node's template in [[GameIterationConfig.stopAtTypes]].
    */
   NormalStop = 'NORMAL_STOP',
 
   /**
    * Stop and continue.
-   * Return a new branch with this node as the terminal but continue making new branches past it.
+   * Stops and returns a new branch like [[NormalStop]], but also continue along making new branches like [[Continue]].
    */
   StopAndContinue = 'STOP_AND_CONTINUE',
 
   /**
-   * Continue. Ignores stop. Continue iteration looking for terminals.
+   * Continue. Ignores the stop. Act as though this node was never listed in [[GameIterationConfig.stopAtTypes]].
    */
   Continue = 'CONTINUE',
 
   /**
-   * Stop but drops the whole branch. It's as if this node didn't exist.
+   * Stop but also drops the whole branch. It's as if this node didn't exist.
    */
   Drop = 'DROP',
 
   /**
-   * Adds this node to the "additional pages" list in the iterator. Otherwise, operates like Continue.
+   * Adds this node to the "additional pages" list in the iterator. Otherwise, operates like [[Continue]].
    */
   CreatePage = 'CREATE_PAGE',
 
   /**
-   * Operates like NormalStop except when taking this branch, we advance past this node until we get a non-Advance node.
+   * Operates like NormalStop except when taking this branch, we advance past this node until we get a non-Advance node. Useful for blank nodes.
    */
   Advance = 'ADVANCE',
 }
 
 /**
- * Configuration for game flow state iteration
+ * Configuration for game flow state iteration. Controls which nodes are considered terminals.
  */
 export interface GameIterationConfig {
   /**
@@ -344,7 +347,10 @@ export interface GameIterationConfig {
   stopAtFeatures?: string[];
 
   /**
-   * Called on notes that match stopAtTypes. Customizes how the stop is handled.
+   * Called on notes that match stopAtTypes. Customizes how the stop is handled (or ignored).
+   *
+   * This is useful if you have nodes that should only be considered terminal if they contain particular text, settings, etc.
+   * It can also return a variety of more advanced terminal handling via [[CustomStopType]] such as page creation and stop and continues.
    */
   customStopHandler?: (
     node: BaseFlowNode,
@@ -359,6 +365,7 @@ export interface GameIterationConfig {
  * @param db Database
  * @param state Current flow state
  * @param node Current node (If you already have it. Avoids unnecessary lookups)
+ * @returns A list of immediate valid child nodes
  */
 export function getFlowStateChildren(
   db: Database,
@@ -406,7 +413,7 @@ type BasicFlowIterationResult = [
 type GameIterationResult = [GameFlowState, BaseFlowNode | undefined];
 
 /**
- * Advances a flow state one node down a branch.
+ * Advances a basic flow state one node down a branch.
  * @param db Database
  * @param state Current flow state
  * @param branchIndex Branch index to follow (-1 to only follow if there is exactly one path)
@@ -475,11 +482,12 @@ function shouldStopAt(
 }
 
 /**
- * Advances from the starting ID to a desired stop at node (or not if we are already at a stop at node)
+ * Creates a new flow state beginning at the first terminal node found by starting at a given ID.
  * @param db Database
- * @param start Starting ID
- * @param config Advancement options
- * @param existing Existing game state to migrate variables and visits from
+ * @param start Starting ID. The returned state will either point to this node (if it's a terminal) or it'll find the first terminal by iterating along the first branch.
+ * @param config Configuration settings which determine which nodes are considered 'terminal'.
+ * @param existing Optional existing game state to migrate variables and visits from.
+ * @returns A new [[GameFlowState]] ready for iteration with [[advanceGameFlowState]].
  */
 export function startupGameFlowState(
   db: Database,
@@ -589,9 +597,10 @@ function executeFlowBranch(
 }
 
 /**
- * Advances a flow state until it hits a node that matches the search criteria.
+ * Advances a [[GameFlowState]] along a particular branch until the next terminal node is hit.
  * @param db Database
- * @param state Current flow state
+ * @param state Current [[GameFlowState]]
+ * @param config Configuration settings which determine which nodes are considered 'terminal'.
  * @param branchIndex Branch index to follow
  * @returns A new game flow state with a list of available branches. Also returns the current node to avoid unncessary lookups.
  */
@@ -666,9 +675,20 @@ export function advanceGameFlowState(
 }
 
 /**
- * Creates a second "thread" in a flow iterator starting at a given node. This will not change the current id of the iterator, but
- * will instead add the results of this new thread to the pages list of the iterator. This is useful if you want to merge two flows
- * together.
+ * Creates a second "thread" in a flow iterator starting at a given node.
+ *
+ * Suppose the existing flow state is stopped at X with 3 branches A, B, and C.
+ * If we merge this state using `mergeGameFlowState` with a `start` of Y is terminal and has branches M and N then we'd get a new [[GameFlowState]] with the following properties:
+ *
+ * * It's [[GameFlowState.id]] would still be the ID of X.
+ * * But it's [[GameFlowState.pages]] would contain both the ID of X and Y.
+ * * It's branches array would contain [A, B, C] *as well as* [M, N]. Each will have a unique branch index.
+ *
+ * The two flow states, the original and the new one starting at Y, have merged. This is called 'pageing'. Your flow state now has multiple pages which are being displayed as one.
+ *
+ * Calling [[refreshBranches]] or [[advanceGameFlowState]] work as normal along any of the sets of branches. Advancing will collapse the state into a single page again, ending up at the destination at the end of that branch.
+ *
+ * This method is called automatically during iteration whenever the [[GameIterationConfig.customStopHandler]] returns [[CustomStopType.CreatePage]]
  * @param db Articy database
  * @param state Current flow iterator
  * @param config Iteration configuration
@@ -929,9 +949,11 @@ function cloneVariableStore(vars: VariableStore): VariableStore {
 }
 
 /**
- * Updates the available branches in a game flow state
+ * Refreshes the branch list of a [[GameFlowState]].
+ *
+ * Useful if you've manually adjusted the value of variables and you want to make sure your branches are accurate.
  * @param db Database
- * @param state Game flow state
+ * @param state Current game flow state
  * @param config Game iteration config settings
  */
 export function refreshBranches(
@@ -980,8 +1002,11 @@ export function refreshBranches(
 
 /**
  * If the flow state has no branches, "complete" the flow by running any remaining pins or instructions after the current node.
+ *
+ * If there are branches, this just returns a nulled out iterator with the variable and visits sets intact.
  * @param db Database
  * @param state Current state
+ * @returns a null iterator with the up-to-date variables and visits
  */
 export function completeFlow(
   db: Database,

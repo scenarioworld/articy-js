@@ -1,18 +1,22 @@
 import { Id, ModelData } from './json';
 import { Database } from './database';
 
-/** Null ID */
+/**
+ * Null ID. Never maps to a real node in the [[Database]].
+ */
 export const NullId: Id = '0x0000000000000000';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/**
+ * Arguments past to the constructor of a [[ArticyObject]] created through [[Database.getObject]].
+ */
 export interface ArticyCreatorArguments<
   PropertiesType = any,
   TemplateType = any
 > {
-  /** Construction properties */
+  /** Properties block from the JSON */
   props: PropertiesType;
 
-  /** Template properties */
+  /** Template properties from the JSON */
   template?: TemplateType;
 
   /** Full model (may incl. other info) */
@@ -21,11 +25,13 @@ export interface ArticyCreatorArguments<
   /** Template name (or base class if not a template) */
   type: string;
 
-  /** Parent database */
+  /** Owning database */
   db: Database;
 }
 
-/** Articy object creator */
+/**
+ * Constructor type for [[ArticyObject]] and any of its subclasses.
+ */
 export type ArticyObjectCreator<ObjectType = unknown> =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   new (args: ArticyCreatorArguments) => ObjectType;

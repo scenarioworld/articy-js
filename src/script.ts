@@ -16,6 +16,18 @@ import { BaseFlowNode } from './flowTypes';
 import { GameFlowState, VisitSet } from './iterator';
 import { Variable, VariableStore } from './variables';
 
+/**
+ * Extend this interface with a type called `ApplicationState` to add Typescript support for accessing your Redux state via Script Function handlers and the like.
+ *
+ * Example:
+ * ```typescript
+ * interface ExtensionTypes
+ * {
+ *    // Replace this type with whatever type you use for your Redux state
+ *    ApplicationState: MyReduxStateType;
+ * }
+ * ```
+ */
 export interface ExtensionTypes {}
 export type ApplicationState = ExtensionTypes extends {
   ApplicationState: unknown;
@@ -23,9 +35,11 @@ export type ApplicationState = ExtensionTypes extends {
   ? ExtensionTypes['ApplicationState']
   : unknown;
 
-// Context passed as the first argument to every script method
+/**
+ * Context passed to each script function handler
+ */
 type Context = {
-  /** Id of the caller (or @see NullId if called outside a node) */
+  /** Id of the caller (or [[NullId]] if called outside a node) */
   caller: Id;
 
   /** Visit information */
@@ -37,7 +51,7 @@ type Context = {
   /** Database */
   db: Database;
 
-  /** Custom application state */
+  /** Custom application state (see [[ExtensionTypes]] and [[createScriptDispatchMiddleware]]) */
   state: Readonly<ApplicationState> | undefined;
 };
 
@@ -47,7 +61,12 @@ type ScriptGenerator = Generator<AnyAction, Variable | void, undefined>;
 // Used internally. This is the signature used by the actual Articy Expresso scripts
 type ScriptFunctionInternal = (...args: Variable[]) => Variable | void;
 
-// Signature of script functions you can register. They must either return a value OR generate script reducers
+/**
+ * Signature for a script function handler registered via [[RegisterScriptFunction]].
+ * @param context Current execution context.
+ * @param args Arguments from the Expresso script
+ * @returns A boolean, void, and optionally a set of Redux actions to call if using [[createScriptDispatchMiddleware]]
+ */
 export type ScriptFunction = (
   context: Context,
   ...args: Variable[]
@@ -86,12 +105,28 @@ function queueGeneratedActions(
   return result.value;
 }
 
-/**
- * Gives articy script function handlers access to the Redux store and the ability to return Redux actions to queue
- */
 type createMiddlewareFunction = (
   finalizeAction?: ActionCreatorWithPayload<AnyAction>
 ) => Middleware;
+
+/**
+ * Creates a Redux middleware that gives script function handlers registered via [[RegisterScriptFunction]] access to your application's current Redux state (via [[Context.state]]).
+ *
+ * Also allows script function handlers, feature handlers, etc. to yield return Redux Actions which will automatically be executed at the end of the current reducer run (or end of the next run if the reducer is not running). You can use this feature by registering your methods via [[RegisterScriptFunction]], etc. as *generator methods*. Then using the `yield` keyword.
+ *
+ * Example:
+ * ```typescript
+ * RegisterScriptFunction('MovePlayerTo', function* (context, x, y) {
+ *    // Read your application state in context.state
+ *
+ *    // Trigger Redux actions (you can do more than one)
+ *    yield { type: 'redux/move_action', x, y };
+ *    yield { type: 'redux/enemies_move' };
+ * });
+ * ```
+ *
+ * You can optionally pass in a `finalizeAction` parameter to this middleware. Anytime Redux actions are triggered and run from ScriptFunctions, at the end this finalizeAction will be posted to the reducer.
+ */
 export const createScriptDispatchMiddleware: createMiddlewareFunction = finalizeAction => storeApi => next => action => {
   // Prime us to queue
   let queue: AnyAction[] = [];
@@ -142,9 +177,9 @@ function wrapScriptFunction(
 }
 
 /**
- * Registers a Javascript function so it can be called from Articy
- * @param name Function name (used in Articy)
- * @param func Function
+ * Makes a Javascript function available to Expresso scripts
+ * @param name Function name (to be used in Articy)
+ * @param func Handler
  */
 export function RegisterScriptFunction(
   name: string,
@@ -174,7 +209,11 @@ export function ClearRegisteredScriptFunctions(): void {
   }
 }
 
-/** Checks if a script method is properly registered. Logs an error if not. */
+/**
+ * Checks if a script method is properly registered. Logs an error if not.
+ * @param method Script method specification (name and return type)
+ * @returns If a method of that name is registered
+ */
 export function VerifyRegisteredScriptMethod(method: ScriptMethodDef): boolean {
   if (!(method.Name in registeredFunctions)) {
     console.error(
@@ -195,9 +234,9 @@ type FeatureExecutionHandler<Feature extends FeatureProps = FeatureProps> = (
 const featureHandlers: Map<string, FeatureExecutionHandler[]> = new Map();
 
 /**
- * Registers a handler function called whenever a node with a given feature is executed in flow.
- * @param name Feature name
- * @param handler Handler to register
+ * Registers a handler function called whenever a node with a given feature is executed in [[advanceGameFlowState]].
+ * @param name Technical name of the feature
+ * @param handler Function to call
  */
 export function RegisterFeatureExecutionHandler<Feature extends FeatureProps>(
   name: string,
@@ -221,9 +260,9 @@ type TemplateExecutionHandler<
 const templateHandlers: Map<string, TemplateExecutionHandler[]> = new Map();
 
 /**
- * Registers a handler function called whenever a node with a given template is executed in flow.
- * @param name Template name
- * @param handler Handler to register
+ * Registers a handler function called whenever a node with a given template is executed in [[advanceGameFlowState]].
+ * @param name Template technical name
+ * @param handler Function to call
  */
 export function RegisterTemplateExecutionHandler<
   Template extends TemplateProps
@@ -237,7 +276,8 @@ export function RegisterTemplateExecutionHandler<
 
 /**
  * Calls all registered feature handlers for a node
- * @param node Flow node
+ * @param node Node to call feature handlers for
+ * @param state Current flow state
  */
 export function OnNodeExecution(
   node: BaseFlowNode,
@@ -374,6 +414,7 @@ export function runScriptRaw(
  * @param caller Id of the node calling this function
  * @param db Database
  * @param returns Is this script expected to return a boolean?
+ * @returns Whether the script returned a truthy value.
  */
 export function runScript(
   script: string | undefined,
