@@ -13,7 +13,7 @@
     "dist"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "jest": {
     "clearMocks": true
@@ -25,7 +25,9 @@
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "typedoc": "typedoc",
+    "peggy": "peggy --plugin ./node_modules/ts-pegjs --extra-options-file ./pegconfig.json -o ./src/inline_peggy.ts ./src/inline.peggy"
   },
   "peerDependencies": {},
   "husky": {
@@ -46,11 +48,11 @@
   "size-limit": [
     {
       "path": "dist/articy-node.cjs.production.min.js",
-      "limit": "10 KB"
+      "limit": "15 KB"
     },
     {
       "path": "dist/articy-node.esm.js",
-      "limit": "10 KB"
+      "limit": "15 KB"
     }
   ],
   "devDependencies": {
@@ -59,15 +61,17 @@
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
+    "exceljs": "^4.2.1",
     "husky": "^4.3.0",
+    "peggy": "^1.2.0",
     "size-limit": "^4.9.0",
+    "ts-pegjs": "^1.1.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.3",
+    "typedoc": "^0.21.4",
     "typescript": "^4.1.2"
   },
-  "dependencies": {
-    "uuid": "^8.3.1"
-  },
+  "dependencies": {},
   "resolutions": {
     "**/typescript": "^4.0.5",
     "**/@typescript-eslint/eslint-plugin": "^4.6.1",

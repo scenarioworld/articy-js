@@ -55,7 +55,8 @@ export {
   VerifyRegisteredScriptMethod,
   createScriptDispatchMiddleware,
   ExtensionTypes,
-  processInlineScripts,
 } from './script';
+
+export { processInlineScripts } from './inline';
 
 export * from './json';

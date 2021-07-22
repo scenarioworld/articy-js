@@ -12,10 +12,22 @@ import {
   TemplateProps,
 } from './json';
 import { Database } from './database';
-import { BaseFlowNode, ExecuteContext } from './flowTypes';
+import { BaseFlowNode } from './flowTypes';
 import { GameFlowState, VisitSet } from './iterator';
 import { Variable, VariableStore } from './variables';
 
+/**
+ * Extend this interface with a type called `ApplicationState` to add Typescript support for accessing your Redux state via Script Function handlers and the like.
+ *
+ * Example:
+ * ```typescript
+ * interface ExtensionTypes
+ * {
+ *    // Replace this type with whatever type you use for your Redux state
+ *    ApplicationState: MyReduxStateType;
+ * }
+ * ```
+ */
 export interface ExtensionTypes {}
 export type ApplicationState = ExtensionTypes extends {
   ApplicationState: unknown;
@@ -23,9 +35,11 @@ export type ApplicationState = ExtensionTypes extends {
   ? ExtensionTypes['ApplicationState']
   : unknown;
 
-// Context passed as the first argument to every script method
+/**
+ * Context passed to each script function handler
+ */
 type Context = {
-  /** Id of the caller (or @see NullId if called outside a node) */
+  /** Id of the caller (or [[NullId]] if called outside a node) */
   caller: Id;
 
   /** Visit information */
@@ -37,7 +51,7 @@ type Context = {
   /** Database */
   db: Database;
 
-  /** Custom application state */
+  /** Custom application state (see [[ExtensionTypes]] and [[createScriptDispatchMiddleware]]) */
   state: Readonly<ApplicationState> | undefined;
 };
 
@@ -47,7 +61,12 @@ type ScriptGenerator = Generator<AnyAction, Variable | void, undefined>;
 // Used internally. This is the signature used by the actual Articy Expresso scripts
 type ScriptFunctionInternal = (...args: Variable[]) => Variable | void;
 
-// Signature of script functions you can register. They must either return a value OR generate script reducers
+/**
+ * Signature for a script function handler registered via [[RegisterScriptFunction]].
+ * @param context Current execution context.
+ * @param args Arguments from the Expresso script
+ * @returns A boolean, void, and optionally a set of Redux actions to call if using [[createScriptDispatchMiddleware]]
+ */
 export type ScriptFunction = (
   context: Context,
   ...args: Variable[]
@@ -86,12 +105,28 @@ function queueGeneratedActions(
   return result.value;
 }
 
-/**
- * Gives articy script function handlers access to the Redux store and the ability to return Redux actions to queue
- */
 type createMiddlewareFunction = (
   finalizeAction?: ActionCreatorWithPayload<AnyAction>
 ) => Middleware;
+
+/**
+ * Creates a Redux middleware that gives script function handlers registered via [[RegisterScriptFunction]] access to your application's current Redux state (via [[Context.state]]).
+ *
+ * Also allows script function handlers, feature handlers, etc. to yield return Redux Actions which will automatically be executed at the end of the current reducer run (or end of the next run if the reducer is not running). You can use this feature by registering your methods via [[RegisterScriptFunction]], etc. as *generator methods*. Then using the `yield` keyword.
+ *
+ * Example:
+ * ```typescript
+ * RegisterScriptFunction('MovePlayerTo', function* (context, x, y) {
+ *    // Read your application state in context.state
+ *
+ *    // Trigger Redux actions (you can do more than one)
+ *    yield { type: 'redux/move_action', x, y };
+ *    yield { type: 'redux/enemies_move' };
+ * });
+ * ```
+ *
+ * You can optionally pass in a `finalizeAction` parameter to this middleware. Anytime Redux actions are triggered and run from ScriptFunctions, at the end this finalizeAction will be posted to the reducer.
+ */
 export const createScriptDispatchMiddleware: createMiddlewareFunction = finalizeAction => storeApi => next => action => {
   // Prime us to queue
   let queue: AnyAction[] = [];
@@ -142,9 +177,9 @@ function wrapScriptFunction(
 }
 
 /**
- * Registers a Javascript function so it can be called from Articy
- * @param name Function name (used in Articy)
- * @param func Function
+ * Makes a Javascript function available to Expresso scripts
+ * @param name Function name (to be used in Articy)
+ * @param func Handler
  */
 export function RegisterScriptFunction(
   name: string,
@@ -174,7 +209,11 @@ export function ClearRegisteredScriptFunctions(): void {
   }
 }
 
-/** Checks if a script method is properly registered. Logs an error if not. */
+/**
+ * Checks if a script method is properly registered. Logs an error if not.
+ * @param method Script method specification (name and return type)
+ * @returns If a method of that name is registered
+ */
 export function VerifyRegisteredScriptMethod(method: ScriptMethodDef): boolean {
   if (!(method.Name in registeredFunctions)) {
     console.error(
@@ -195,9 +234,9 @@ type FeatureExecutionHandler<Feature extends FeatureProps = FeatureProps> = (
 const featureHandlers: Map<string, FeatureExecutionHandler[]> = new Map();
 
 /**
- * Registers a handler function called whenever a node with a given feature is executed in flow.
- * @param name Feature name
- * @param handler Handler to register
+ * Registers a handler function called whenever a node with a given feature is executed in [[advanceGameFlowState]].
+ * @param name Technical name of the feature
+ * @param handler Function to call
  */
 export function RegisterFeatureExecutionHandler<Feature extends FeatureProps>(
   name: string,
@@ -221,9 +260,9 @@ type TemplateExecutionHandler<
 const templateHandlers: Map<string, TemplateExecutionHandler[]> = new Map();
 
 /**
- * Registers a handler function called whenever a node with a given template is executed in flow.
- * @param name Template name
- * @param handler Handler to register
+ * Registers a handler function called whenever a node with a given template is executed in [[advanceGameFlowState]].
+ * @param name Template technical name
+ * @param handler Function to call
  */
 export function RegisterTemplateExecutionHandler<
   Template extends TemplateProps
@@ -237,7 +276,8 @@ export function RegisterTemplateExecutionHandler<
 
 /**
  * Calls all registered feature handlers for a node
- * @param node Flow node
+ * @param node Node to call feature handlers for
+ * @param state Current flow state
  */
 export function OnNodeExecution(
   node: BaseFlowNode,
@@ -299,7 +339,7 @@ function scrubComments(script: string): string {
 
 type MaybeSpeaker = { Speaker?: Id } & ArticyObjectProps;
 
-function runScriptRaw(
+export function runScriptRaw(
   script: string | undefined,
   variables: VariableStore,
   visits: VisitSet,
@@ -374,6 +414,7 @@ function runScriptRaw(
  * @param caller Id of the node calling this function
  * @param db Database
  * @param returns Is this script expected to return a boolean?
+ * @returns Whether the script returned a truthy value.
  */
 export function runScript(
   script: string | undefined,
@@ -397,195 +438,4 @@ export function runScript(
 
   // Evaluate as boolean
   return result === true;
-}
-
-const SequenceRegex: RegExp = /{((!?[A-Za-z0-9.]+:)|([!~&]))?([^|]*)((\|([^|]*))*)}/g;
-
-enum SequenceType {
-  Stopping,
-  Cycle,
-  Shuffle,
-  OnlyOnce,
-  Conditional,
-}
-
-function ParseSequenceType(type: string): SequenceType {
-  if (type === undefined) {
-    return SequenceType.Stopping;
-  }
-
-  if (type.endsWith(':')) {
-    return SequenceType.Conditional;
-  }
-
-  switch (type) {
-    case '!':
-      return SequenceType.OnlyOnce;
-    case '~':
-      return SequenceType.Shuffle;
-    case '&':
-      return SequenceType.Cycle;
-  }
-
-  throw new Error(`Unexpected sequence identifier: ${type}`);
-}
-
-function processSequence(
-  type: SequenceType,
-  typeString: string,
-  alternates: string[],
-  caller: Id,
-  context: ExecuteContext,
-  db: Database
-): string {
-  // SPECIAL CASE: If this is a stopping list with no alternates, evaluate it as a print
-  if (
-    type === SequenceType.Stopping &&
-    typeString === undefined &&
-    alternates.length === 1
-  ) {
-    const evaluated = runScriptRaw(
-      alternates[0],
-      context.variables,
-      context.visits,
-      caller,
-      db,
-      true,
-      false
-    );
-    return `${evaluated}`;
-  }
-
-  let index = -1;
-  const visits = context.visits.counts[caller] ?? 0;
-  switch (type) {
-    case SequenceType.Stopping:
-      index = Math.min(visits, alternates.length - 1);
-      break;
-    case SequenceType.Cycle:
-      index = visits % alternates.length;
-      break;
-    case SequenceType.OnlyOnce:
-      index = visits;
-      if (index >= alternates.length) {
-        return '';
-      }
-      break;
-    case SequenceType.Shuffle:
-      // TODO - Prevent repeats until you've hit every item once
-      index = Math.floor(Math.random() * alternates.length);
-      break;
-    case SequenceType.Conditional:
-      // Evaluate
-      const cond = typeString.substr(0, typeString.length - 1);
-      const result = runScript(
-        cond,
-        context.variables,
-        context.visits,
-        caller,
-        db,
-        true,
-        false
-      );
-      index = result ? 0 : 1;
-      if (index >= alternates.length) {
-        return '';
-      }
-  }
-
-  return alternates[index];
-}
-
-function splitAlternatesList(list: string): string[] {
-  const result: string[] = [];
-
-  let start = 0;
-  let depth = 0;
-  for (let i = 0; i < list.length; i++) {
-    if (list[i] === '{') {
-      depth++;
-    } else if (list[i] === '}' && depth > 0) {
-      depth--;
-    } else if (list[i] === '|' && depth === 0) {
-      result.push(list.substr(start, i - start));
-      start = i + 1;
-    }
-  }
-
-  result.push(list.substr(start));
-
-  return result;
-}
-
-/**
- * Takes text and parses it for inline scripts and lists that match Inkle Ink's "Lists" and "Variable Printing" syntax.
- * See https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#1-basic-lists
- * And https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#printing-variables
- * @param text Text to process for inline scripts
- * @param context Execution context (includes variables and visit counts)
- * @param caller ID of the node this text is from (used for script execution)
- * @param db Parent database (used for script execution)
- * @returns The input text where all inline scripts are replaced with their values
- */
-export function processInlineScripts(
-  text: string,
-  context: ExecuteContext,
-  caller: Id,
-  db: Database
-): string {
-  // Collect all regex matches
-  const matches: RegExpExecArray[] = [];
-  while (true) {
-    const match = SequenceRegex.exec(text);
-    if (match === null) {
-      break;
-    }
-    matches.push(match);
-  }
-
-  // Iterate through matches and process
-  let index = 0;
-  const output: string[] = [];
-  for (const match of matches) {
-    // Add text preceeding match to output (if available)
-    const startIndex = match.index;
-    if (index !== startIndex) {
-      output.push(text.substr(index, startIndex - index));
-    }
-
-    // Get sequence type
-    const type = ParseSequenceType(match[1]);
-
-    // Get the alternates list
-    const alternatives = splitAlternatesList(
-      [match[4], match[5]].filter(m => m !== undefined).join('')
-    );
-
-    // Process the match
-    let processedText = processSequence(
-      type,
-      match[1],
-      alternatives,
-      caller,
-      context,
-      db
-    );
-
-    // Recurse (processed match might have generated new {} blocks)
-    processedText = processInlineScripts(processedText, context, caller, db);
-
-    // Add process result to output
-    output.push(processedText);
-
-    // Increment index
-    index = match.index + match[0].length;
-  }
-
-  // Add text after last match to output
-  if (index !== text.length) {
-    output.push(text.substr(index));
-  }
-
-  // Return combined output
-  return output.join('');
 }

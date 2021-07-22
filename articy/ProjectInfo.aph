@@ -1,0 +1,19 @@
+<ProjectInfo Version="1">
+  <Signature>11486089F114848CA933EBB16D2933A22CD5CCCF88678FBDA83296A76A6F962F</Signature>
+  <Content>
+    <Project Guid="ba12c573-b07a-4281-bcec-b497fa2c14b1">
+      <DisplayName Value="NodeJS Unit Tests"/>
+      <DetailName Value=""/>
+      <MainProjectGuid Value="6e516a75-8749-4b60-a8e4-e401f9726766"/>
+      <IconType Value="0"/>
+      <IdProjectIcon Value="00000000-0000-0000-0000-000000000000"/>
+      <ScmProviderGuid Value="0745c2ee-abe3-451b-934e-7f597f56c0d7"/>
+      <ScmConfiguration Value=""/>
+      <CreationTimeStamp Value="637610255595673673"/>
+      <PartitionHash Value="9269BA641630B707DFCC43423A723B54D9EC8E8398627D060B63FA6C76D5E552"/>
+      <SaveFileVersion Value="55"/>
+      <ProjectType Value="0"/>
+      <IsOnlineProject Value="False"/>
+    </Project>
+  </Content>
+</ProjectInfo>

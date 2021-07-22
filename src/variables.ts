@@ -1,14 +1,18 @@
-/** Types of variables supported by Articy */
+/**
+ * Union of types that the value of an Articy Global Variable may have. See [[VariableNamespace]].
+ */
 export type Variable = string | number | boolean;
 
 /**
- * Represents all values in a variable namespace
+ * A dictionary of variable names to values in a Global Variable Namespace. See [[VariableStore]].
  */
 export interface VariableNamespace {
   [name: string]: Variable;
 }
 
-/** Stores all global variables for the game */
+/**
+ * A dictionary of namespace names to namespaces. Used as the root global variable store.
+ */
 export interface VariableStore {
   [name: string]: VariableNamespace;
 }
