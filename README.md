@@ -13,6 +13,10 @@ yarn add articy-js
 npm install articy-js --save-dev
 ```
 
+## Documentation
+
+Check out the [full Typedoc generated documentation here](https://scenarioworld.github.io/articy-js/).
+
 ## Loading Data from Articy
 
 First we'll see how to get data from your Articy project into your Javascript application or game.
