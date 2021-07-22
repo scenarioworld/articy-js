@@ -1,4 +1,4 @@
-# Articy.Node
+# ArticyJS
 
 A node package for loading and executing [Articy](http://www.articy.com) flows from JSON exports. Includes full TypeScript support.
 
