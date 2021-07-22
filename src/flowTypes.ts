@@ -141,8 +141,8 @@ export class BasePin extends BaseFlowNode<PinProps> {
     // Create and sort connection list
     this._connections = [...(this.properties.Connections ?? [])];
     this._connections.sort((a, b) => {
-      const lnode = this.db.getProperties<FlowObjectProps>(a.Target);
-      const rnode = this.db.getProperties<FlowObjectProps>(b.Target);
+      const lnode = this.db.getModel<FlowObjectProps>(a.Target)?.Properties;
+      const rnode = this.db.getModel<FlowObjectProps>(b.Target)?.Properties;
       return (lnode?.Position.y ?? 0) - (rnode?.Position.y ?? 0);
     });
 

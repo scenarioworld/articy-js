@@ -388,9 +388,7 @@ export function runScriptRaw(
   };
 
   // Figure out speaker variable
-  //const speaker: Id|undefined = db.isOfType(caller, DialogueFragment) ? db.getProperties<DialogueFragmentProps>(caller)?.Speaker : undefined;
-
-  const speaker: Id | undefined = db.getProperties<MaybeSpeaker>(caller)
+  const speaker: Id | undefined = db.getModel<MaybeSpeaker>(caller)?.Properties
     ?.Speaker;
 
   // Call the function with the variable sets
