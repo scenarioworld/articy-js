@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>articy-node | articy-node</title>
-	<meta name="description" content="Documentation for articy-node">
+	<title>articy-js | articy-js</title>
+	<meta name="description" content="Documentation for articy-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">:root {
   --color-background: #fdfdfd;
@@ -2674,7 +2674,7 @@ img {
 		<div class="container">
 			<div class="table-wrap">
 				<div class="table-cell">
-					<strong><a href="index.html">articy-node</a></strong>
+					<strong><a href="index.html">articy-js</a></strong>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -3048,8 +3048,8 @@ img {
 				<h2>Installation</h2>
 			</a>
 			<p>Just install using <code>npm</code> or <code>yarn</code> and you&#39;re ready to go.</p>
-			<pre><code><span style="color: #001080">yarn</span><span style="color: #000000"> </span><span style="color: #001080">add</span><span style="color: #000000"> </span><span style="color: #001080">articy</span><span style="color: #000000">-</span><span style="color: #001080">node</span>
-<span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">install</span><span style="color: #000000"> </span><span style="color: #001080">articy</span><span style="color: #000000">-</span><span style="color: #001080">node</span><span style="color: #000000"> --</span><span style="color: #001080">save</span><span style="color: #000000">-</span><span style="color: #001080">dev</span>
+			<pre><code><span style="color: #001080">yarn</span><span style="color: #000000"> </span><span style="color: #001080">add</span><span style="color: #000000"> </span><span style="color: #001080">articy</span><span style="color: #000000">-</span><span style="color: #001080">js</span>
+<span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">install</span><span style="color: #000000"> </span><span style="color: #001080">articy</span><span style="color: #000000">-</span><span style="color: #001080">js</span><span style="color: #000000"> --</span><span style="color: #001080">save</span><span style="color: #000000">-</span><span style="color: #001080">dev</span>
 </code></pre>
 			<a href="#loading-data-from-articy" id="loading-data-from-articy" style="color: inherit; text-decoration: none;">
 				<h2>Loading Data from Articy</h2>
@@ -3069,7 +3069,7 @@ img {
 
 <span style="color: #008000">// Import data from the exported json</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">GameData</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./exported.articy.json&quot;</span><span style="color: #000000">;</span>
-<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Database</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-node&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Database</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-js&quot;</span><span style="color: #000000">;</span>
 
 <span style="color: #008000">// Create a new database</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">GameDB</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Database</span><span style="color: #000000">(</span><span style="color: #001080">GameData</span><span style="color: #000000">)</span>
@@ -3086,7 +3086,7 @@ img {
 			<p>The <code>Database</code> class will give you access to objects within your project such as Entities, Flow Fragments, Dialogues, etc. Objects are accessed by their Unique ID which you can find in the Properties Inspector in Articy. All IDs begin with <code>0x</code>.</p>
 			<p>To access an object, use the <code>getObject</code> method.</p>
 			<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">GameDB</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;GameDB&quot;</span><span style="color: #000000">;</span>
-<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">FlowFragment</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-node&quot;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">FlowFragment</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-js&quot;</span><span style="color: #000000">;</span>
 
 <span style="color: #008000">// Get a flow fragment by ID</span>
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">fragment</span><span style="color: #000000"> = </span><span style="color: #001080">GameDB</span><span style="color: #000000">.</span><span style="color: #795E26">getObject</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;0x01000000000018A3&quot;</span><span style="color: #000000">, </span><span style="color: #001080">FlowFragment</span><span style="color: #000000">);</span>
@@ -3237,7 +3237,7 @@ img {
 				<h2>Asset Loading</h2>
 			</a>
 			<p>To support asset loading (such as images), just add an asset resolver function to the Database constructor. This method should, given an asset reference string in Articy return the assets filename. In webpack, this is easy.</p>
-			<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Database</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-node&quot;</span><span style="color: #000000">;</span>
+			<pre><code class="language-js"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Database</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-js&quot;</span><span style="color: #000000">;</span>
 
 <span style="color: #008000">// Import game data from json</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">GameData</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./game.articy.json&quot;</span><span style="color: #000000">;</span>
@@ -3268,7 +3268,7 @@ img {
 			<p>This package supports Articy&#39;s localization system. When loading a project with localization turned on, you&#39;ll use the <code>localization</code> object within the <code>Database</code> class to load and manage your game&#39;s localized text.</p>
 			<p>Note that this class can&#39;t load <code>.xlsx</code> files directly. Instead, it requires a JSON object that maps localization IDs to strings. You can get this by loading the xlsx file yourself using a library like <a href="https://www.npmjs.com/package/xlsx">xlsx</a> or <a href="https://www.npmjs.com/package/exceljs">exceljs</a> or using our <a href="https://www.npmjs.com/package/articy-xlsx-loader">articy-xlsx-loader</a> if you&#39;re using Webpack.</p>
 			<p>Objects accessed via <code>getObject</code> will automatically have their properties localized to whatever the active language is. You can change the active language at any time using the Localization objects&#39; <code>active</code> variable. This will automatically update the text in all loaded objects, meaning you don&#39;t have to worry about holding onto objects loaded via <code>getObject</code>.</p>
-			<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Database</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-node&quot;</span><span style="color: #000000">;</span>
+			<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Database</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;articy-js&quot;</span><span style="color: #000000">;</span>
 
 <span style="color: #008000">// Import game data from json with localization turned on</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">GameData</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;./game.articy.json&quot;</span><span style="color: #000000">;</span>
@@ -3467,7 +3467,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Articy<wbr>Class<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;Enum&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Primitive&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ArticyObject&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;FlowFragment&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Dialogue&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;DialogueFragment&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Hub&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Jump&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Comment&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Entity&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Location&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Spot&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Zone&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Path&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Link&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Asset&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Condition&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Instruction&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;LocationText&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;LocationImage&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;Document&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;TextObject&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;UserFolder&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L345">json.ts:345</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L345">json.ts:345</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3482,7 +3482,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Articy<wbr>Object<wbr>Creator&lt;ObjectType&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">new </span><span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArticyCreatorArguments</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">ObjectType</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/object.ts#L35">object.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/object.ts#L35">object.ts:35</a></li>
 					</ul>
 				</aside>
 				<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -3524,7 +3524,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Box<wbr>Data<span class="tsd-signature-symbol">:</span> <a href="interfaces/PointData.html" class="tsd-signature-type" data-tsd-kind="Interface">PointData</a><span class="tsd-signature-symbol"> &amp; </span><a href="interfaces/SizeData.html" class="tsd-signature-type" data-tsd-kind="Interface">SizeData</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L83">json.ts:83</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L83">json.ts:83</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3539,7 +3539,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Feature<wbr>Property<wbr>Definition<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Required</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/PropertyDefinition.html" class="tsd-signature-type" data-tsd-kind="Interface">PropertyDefinition</a><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L413">json.ts:413</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L413">json.ts:413</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3554,7 +3554,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Feature<wbr>Props<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L228">json.ts:228</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L228">json.ts:228</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3574,7 +3574,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L29">json.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L29">json.ts:29</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3589,7 +3589,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Object<wbr>Definition<span class="tsd-signature-symbol">:</span> <a href="interfaces/EnumDefinition.html" class="tsd-signature-type" data-tsd-kind="Interface">EnumDefinition</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/TypeDefinition.html" class="tsd-signature-type" data-tsd-kind="Interface">TypeDefinition</a><span class="tsd-signature-symbol"> | </span><a href="interfaces/TemplateTypeDefinition.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateTypeDefinition</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L450">json.ts:450</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L450">json.ts:450</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -3599,7 +3599,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Preview<wbr>Image<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Asset<span class="tsd-signature-symbol">: </span><a href="modules.html#Id" class="tsd-signature-type" data-tsd-kind="Type alias">Id</a><span class="tsd-signature-symbol">; </span>Mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;FromAsset&quot;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><a href="interfaces/HasViewBoxData.html" class="tsd-signature-type" data-tsd-kind="Interface">HasViewBoxData</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L92">json.ts:92</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L92">json.ts:92</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3614,7 +3614,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Transform<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>Pivot<span class="tsd-signature-symbol">: </span><a href="interfaces/PointData.html" class="tsd-signature-type" data-tsd-kind="Interface">PointData</a><span class="tsd-signature-symbol">; </span>Rotation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>Translation<span class="tsd-signature-symbol">: </span><a href="interfaces/PointData.html" class="tsd-signature-type" data-tsd-kind="Interface">PointData</a><span class="tsd-signature-symbol"> }</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/json.ts#L41">json.ts:41</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/json.ts#L41">json.ts:41</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3658,7 +3658,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Variable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/variables.ts#L4">variables.ts:4</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/variables.ts#L4">variables.ts:4</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3676,7 +3676,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Null<wbr>Game<wbr>Flow<wbr>State<span class="tsd-signature-symbol">:</span> <a href="interfaces/GameFlowState.html" class="tsd-signature-type" data-tsd-kind="Interface">GameFlowState</a><span class="tsd-signature-symbol"> = ...</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L285">iterator.ts:285</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L285">iterator.ts:285</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3691,7 +3691,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">Null<wbr>Id<span class="tsd-signature-symbol">:</span> <a href="modules.html#Id" class="tsd-signature-type" data-tsd-kind="Type alias">Id</a><span class="tsd-signature-symbol"> = &#x27;0x0000000000000000&#x27;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/object.ts#L7">object.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/object.ts#L7">object.ts:7</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3713,7 +3713,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L662">database.ts:662</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/database.ts#L662">database.ts:662</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3763,7 +3763,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L324">script.ts:324</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L324">script.ts:324</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3785,7 +3785,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L331">script.ts:331</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L331">script.ts:331</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3807,7 +3807,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L649">database.ts:649</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/database.ts#L649">database.ts:649</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3850,7 +3850,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L241">script.ts:241</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L241">script.ts:241</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3893,7 +3893,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L184">script.ts:184</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L184">script.ts:184</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3930,7 +3930,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L267">script.ts:267</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L267">script.ts:267</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3973,7 +3973,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L217">script.ts:217</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L217">script.ts:217</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4005,7 +4005,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L607">iterator.ts:607</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L607">iterator.ts:607</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4055,7 +4055,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L422">iterator.ts:422</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L422">iterator.ts:422</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4102,7 +4102,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L214">iterator.ts:214</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L214">iterator.ts:214</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4145,7 +4145,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L757">iterator.ts:757</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L757">iterator.ts:757</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -4192,7 +4192,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L1011">iterator.ts:1011</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L1011">iterator.ts:1011</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4231,7 +4231,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L130">script.ts:130</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L130">script.ts:130</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4270,7 +4270,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L233">iterator.ts:233</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L233">iterator.ts:233</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4319,7 +4319,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L698">iterator.ts:698</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L698">iterator.ts:698</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4379,7 +4379,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/inline.ts#L16">inline.ts:16</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/inline.ts#L16">inline.ts:16</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4431,7 +4431,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L959">iterator.ts:959</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L959">iterator.ts:959</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4475,7 +4475,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L185">iterator.ts:185</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L185">iterator.ts:185</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4512,7 +4512,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L201">iterator.ts:201</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L201">iterator.ts:201</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4549,7 +4549,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/script.ts#L417">script.ts:417</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/script.ts#L417">script.ts:417</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -4614,7 +4614,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/iterator.ts#L492">iterator.ts:492</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/2c7e1d2/src/iterator.ts#L492">iterator.ts:492</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
