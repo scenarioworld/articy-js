@@ -2717,7 +2717,10 @@ img {
 					<a href="Database.html#localization" class="tsd-kind-icon">localization</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="Database.html#getAssetFilename" class="tsd-kind-icon">get<wbr>Asset<wbr>Filename</a>
+					<a href="Database.html#getAssetFilenameFromId" class="tsd-kind-icon">get<wbr>Asset<wbr>Filename<wbr>From<wbr>Id</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="Database.html#getAssetFilenameFromRef" class="tsd-kind-icon">get<wbr>Asset<wbr>Filename<wbr>From<wbr>Ref</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="Database.html#getChildren" class="tsd-kind-icon">get<wbr>Children</a>
@@ -2730,6 +2733,9 @@ img {
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="Database.html#getEnumValueDisplayName" class="tsd-kind-icon">get<wbr>Enum<wbr>Value<wbr>Display<wbr>Name</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a href="Database.html#getModel" class="tsd-kind-icon">get<wbr>Model</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 					<a href="Database.html#getModelsOfType" class="tsd-kind-icon">get<wbr>Models<wbr>OfType</a>
@@ -2749,12 +2755,6 @@ img {
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="Database.html#getParent" class="tsd-kind-icon">get<wbr>Parent</a>
 				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-					<a href="Database.html#getProperties" class="tsd-kind-icon">get<wbr>Properties</a>
-				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-					<a href="Database.html#getPropertiesOfType" class="tsd-kind-icon">get<wbr>Properties<wbr>OfType</a>
-				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="Database.html#getType" class="tsd-kind-icon">get<wbr>Type</a>
 				</li>
@@ -2766,9 +2766,6 @@ img {
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="Database.html#newVariableStore" class="tsd-kind-icon">new<wbr>Variable<wbr>Store</a>
-				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="Database.html#resolveAssetFilename" class="tsd-kind-icon">resolve<wbr>Asset<wbr>Filename</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="Database.html#verifyScriptFunctions" class="tsd-kind-icon">verify<wbr>Script<wbr>Functions</a>
@@ -2833,24 +2830,23 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getAssetFilename" class="tsd-kind-icon">get<wbr>Asset<wbr>Filename</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getAssetFilenameFromId" class="tsd-kind-icon">get<wbr>Asset<wbr>Filename<wbr>From<wbr>Id</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getAssetFilenameFromRef" class="tsd-kind-icon">get<wbr>Asset<wbr>Filename<wbr>From<wbr>Ref</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getChildren" class="tsd-kind-icon">get<wbr>Children</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getChildrenOfType" class="tsd-kind-icon">get<wbr>Children<wbr>OfType</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getDefinition" class="tsd-kind-icon">get<wbr>Definition</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getEnumValueDisplayName" class="tsd-kind-icon">get<wbr>Enum<wbr>Value<wbr>Display<wbr>Name</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getModel" class="tsd-kind-icon">get<wbr>Model</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getModelsOfType" class="tsd-kind-icon">get<wbr>Models<wbr>OfType</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getModelsWithFeature" class="tsd-kind-icon">get<wbr>Models<wbr>With<wbr>Feature</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getObject" class="tsd-kind-icon">get<wbr>Object</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getObjectByTechnicalName" class="tsd-kind-icon">get<wbr>Object<wbr>ByTechnical<wbr>Name</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getObjectsWithFeature" class="tsd-kind-icon">get<wbr>Objects<wbr>With<wbr>Feature</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getParent" class="tsd-kind-icon">get<wbr>Parent</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getProperties" class="tsd-kind-icon">get<wbr>Properties</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="Database.html#getPropertiesOfType" class="tsd-kind-icon">get<wbr>Properties<wbr>OfType</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#getType" class="tsd-kind-icon">get<wbr>Type</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#isOfType" class="tsd-kind-icon">is<wbr>OfType</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#isType" class="tsd-kind-icon">is<wbr>Type</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#newVariableStore" class="tsd-kind-icon">new<wbr>Variable<wbr>Store</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#resolveAssetFilename" class="tsd-kind-icon">resolve<wbr>Asset<wbr>Filename</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="Database.html#verifyScriptFunctions" class="tsd-kind-icon">verify<wbr>Script<wbr>Functions</a></li>
 						</ul>
 					</section>
@@ -2869,7 +2865,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L90">database.ts:90</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L90">database.ts:90</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2909,7 +2905,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">guid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L77">database.ts:77</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L77">database.ts:77</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2924,7 +2920,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">localization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Localization</span><span class="tsd-signature-symbol"> = ...</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L80">database.ts:80</a></li>
+						<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L80">database.ts:80</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2937,21 +2933,21 @@ img {
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="getAssetFilename" class="tsd-anchor"></a>
-				<h3>get<wbr>Asset<wbr>Filename</h3>
+				<a name="getAssetFilenameFromId" class="tsd-anchor"></a>
+				<h3>get<wbr>Asset<wbr>Filename<wbr>From<wbr>Id</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Asset<wbr>Filename<span class="tsd-signature-symbol">(</span>assetId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Asset<wbr>Filename<wbr>From<wbr>Id<span class="tsd-signature-symbol">(</span>assetId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L581">database.ts:581</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L567">database.ts:567</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Returns the actual filename for an asset</p>
+								<p>Resolves the full filename of an asset given its ID</p>
 							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2969,6 +2965,38 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getAssetFilenameFromRef" class="tsd-anchor"></a>
+				<h3>get<wbr>Asset<wbr>Filename<wbr>From<wbr>Ref</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Asset<wbr>Filename<wbr>From<wbr>Ref<span class="tsd-signature-symbol">(</span>assetRef<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L587">database.ts:587</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Resolves the full filename of an asset given its reference name</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>assetRef: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Asset Reference</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
+						<p>Absolute path using the <code>assetResolver</code> passed into the database constructor</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="getChildren" class="tsd-anchor"></a>
 				<h3>get<wbr>Children</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -2978,7 +3006,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L214">database.ts:214</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L214">database.ts:214</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3010,7 +3038,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L231">database.ts:231</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L231">database.ts:231</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3054,7 +3082,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L192">database.ts:192</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L192">database.ts:192</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3086,7 +3114,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L163">database.ts:163</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L163">database.ts:163</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3115,6 +3143,53 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a name="getModel" class="tsd-anchor"></a>
+				<h3>get<wbr>Model</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Model&lt;PropType, TemplateType&gt;<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ModelData.html" class="tsd-signature-type" data-tsd-kind="Interface">ModelData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PropType</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TemplateType</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L443">database.ts:443</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Returns the properties block of an object</p>
+							</div>
+						</div>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>PropType<span class="tsd-signature-symbol">: </span><a href="../interfaces/ArticyObjectProps.html" class="tsd-signature-type" data-tsd-kind="Interface">ArticyObjectProps</a></h4>
+								<div class="tsd-comment tsd-typography">
+									<p>Properties block interface</p>
+								</div>
+							</li>
+							<li>
+								<h4>TemplateType<span class="tsd-signature-symbol">: </span><a href="../interfaces/TemplateProps.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateProps</a> = <a href="../interfaces/TemplateProps.html" class="tsd-signature-type" data-tsd-kind="Interface">TemplateProps</a></h4>
+								<div class="tsd-comment tsd-typography">
+									<p>Template block interface</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>Object ID</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/ModelData.html" class="tsd-signature-type" data-tsd-kind="Interface">ModelData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PropType</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TemplateType</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>Model</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 				<a name="getModelsOfType" class="tsd-anchor"></a>
 				<h3>get<wbr>Models<wbr>OfType</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
@@ -3124,7 +3199,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L476">database.ts:476</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L462">database.ts:462</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3171,7 +3246,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L498">database.ts:498</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L484">database.ts:484</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3218,7 +3293,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L407">database.ts:407</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L374">database.ts:374</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3269,7 +3344,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L383">database.ts:383</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L350">database.ts:350</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3314,7 +3389,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L529">database.ts:529</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L515">database.ts:515</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3359,7 +3434,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L544">database.ts:544</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L530">database.ts:530</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3403,7 +3478,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L205">database.ts:205</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L205">database.ts:205</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3425,82 +3500,6 @@ img {
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<a name="getProperties" class="tsd-anchor"></a>
-				<h3>get<wbr>Properties</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Properties&lt;PropsType&gt;<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PropsType</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L349">database.ts:349</a></li>
-							</ul>
-						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Returns the properties block of an object</p>
-							</div>
-						</div>
-						<h4 class="tsd-type-parameters-title">Type parameters</h4>
-						<ul class="tsd-type-parameters">
-							<li>
-								<h4>PropsType<span class="tsd-signature-symbol">: </span><a href="../interfaces/ArticyObjectProps.html" class="tsd-signature-type" data-tsd-kind="Interface">ArticyObjectProps</a></h4>
-							</li>
-						</ul>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>id: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>Object ID</p>
-								</div>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PropsType</span></h4>
-						<p>Property block. Will be automaticlly localized if required.</p>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<a name="getPropertiesOfType" class="tsd-anchor"></a>
-				<h3>get<wbr>Properties<wbr>OfType</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-					<li class="tsd-signature tsd-kind-icon">get<wbr>Properties<wbr>OfType&lt;PropsType&gt;<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PropsType</span><span class="tsd-signature-symbol">[]</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L365">database.ts:365</a></li>
-							</ul>
-						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Gets all property blocks for objects of a given type</p>
-							</div>
-						</div>
-						<h4 class="tsd-type-parameters-title">Type parameters</h4>
-						<ul class="tsd-type-parameters">
-							<li>
-								<h4>PropsType<span class="tsd-signature-symbol">: </span><a href="../interfaces/ArticyObjectProps.html" class="tsd-signature-type" data-tsd-kind="Interface">ArticyObjectProps</a></h4>
-							</li>
-						</ul>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>type: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>Type name</p>
-								</div>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">PropsType</span><span class="tsd-signature-symbol">[]</span></h4>
-						<p>Property blocks, all localized if applicable.</p>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="getType" class="tsd-anchor"></a>
 				<h3>get<wbr>Type</h3>
@@ -3511,7 +3510,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L568">database.ts:568</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L554">database.ts:554</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3543,7 +3542,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L246">database.ts:246</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L246">database.ts:246</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3581,7 +3580,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L327">database.ts:327</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L327">database.ts:327</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3619,7 +3618,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L277">database.ts:277</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L277">database.ts:277</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3633,38 +3632,6 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="resolveAssetFilename" class="tsd-anchor"></a>
-				<h3>resolve<wbr>Asset<wbr>Filename</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">resolve<wbr>Asset<wbr>Filename<span class="tsd-signature-symbol">(</span>assetRef<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L601">database.ts:601</a></li>
-							</ul>
-						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Resolves the full filename of an asset given a ref</p>
-							</div>
-						</div>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>assetRef: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>Asset Reference</p>
-								</div>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
-						<p>Absolute path using the <code>assetResolver</code> passed into the database constructor</p>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="verifyScriptFunctions" class="tsd-anchor"></a>
 				<h3>verify<wbr>Script<wbr>Functions</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -3674,7 +3641,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/aac89c9/src/database.ts#L613">database.ts:613</a></li>
+								<li>Defined in <a href="https://github.com/scenarioworld/articy-node/blob/46d00d2/src/database.ts#L599">database.ts:599</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
