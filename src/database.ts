@@ -11,7 +11,6 @@ import {
   ObjectDefinition,
   TemplateProps,
 } from './json';
-import { v4 as uuidv4 } from 'uuid';
 import { ArticyCreatorArguments, ArticyObjectCreator } from './object';
 import { VerifyRegisteredScriptMethod } from './script';
 import { Variable, VariableNamespace, VariableStore } from './variables';
@@ -90,8 +89,8 @@ export class Database {
    */
   constructor(data: ArticyData, assetResolver?: ResolveAssetPath) {
     // Store articy database
-    this.guid = uuidv4();
     this._data = data;
+    this.guid = data.Project.Guid;
     this._assetResolver = assetResolver;
 
     // Iterate object definitions and create a map of type names to definitions
