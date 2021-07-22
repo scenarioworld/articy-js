@@ -48,11 +48,11 @@
   "size-limit": [
     {
       "path": "dist/articy-node.cjs.production.min.js",
-      "limit": "10 KB"
+      "limit": "15 KB"
     },
     {
       "path": "dist/articy-node.esm.js",
-      "limit": "10 KB"
+      "limit": "15 KB"
     }
   ],
   "devDependencies": {
