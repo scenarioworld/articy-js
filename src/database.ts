@@ -34,7 +34,7 @@ type ResolveAssetPath = (assetRef: string) => string | null | undefined;
  *
  * // Import data from the exported json
  * import GameData from "./exported.articy.json";
- * import { Database } from "articy-node";
+ * import { Database } from "articy-js";
  *
  * // Create a new database
  * const GameDB = new Database(GameData)
