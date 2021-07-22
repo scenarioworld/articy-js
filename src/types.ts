@@ -22,24 +22,26 @@ export interface TemplateExtension<
 
 /**
  * Base class for all articy objects
+ * @typeparam PropertiesType Property block interface
+ * @typeparam TemplateType Template block interface
  */
 export class ArticyObject<
   PropertiesType extends ArticyObjectProps,
   TemplateType extends TemplateProps = TemplateProps
 > {
-  /** Properties from JSON */
+  /** Properties loaded from JSON */
   public readonly properties: Readonly<PropertiesType>;
 
-  /** Template from JSON */
+  /** Template loaded from JSON */
   public readonly template?: Readonly<TemplateType & Partial<GlobalFeatures>>;
 
-  /** Type this was loaded as */
+  /** Type this object was loaded as (ex. `DialogueFragment` or `MyCustomTemplate`) */
   public readonly type: string;
 
-  /** Parent DB */
+  /** Database owner */
   public readonly db: Database;
 
-  /** Helper ID */
+  /** Articy ID (ex. 0x000010003B) */
   public readonly id: Id;
 
   constructor(args: ArticyCreatorArguments<PropertiesType, TemplateType>) {
@@ -97,7 +99,8 @@ export class ArticyObject<
 }
 
 /**
- * Base class to all entities
+ * Base class for all entities
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('Entity')
 export class Entity<
@@ -113,6 +116,7 @@ export class Entity<
 
 /**
  * Asset type. Includes images, sounds, etc. stored in Articy.
+ * @typeparam TemplateType Template block interface
  */
 @ArticyType('Asset')
 export class Asset<
