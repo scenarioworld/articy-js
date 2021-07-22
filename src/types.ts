@@ -133,6 +133,6 @@ export class Asset<
 
     // Load asset ref
     this.AssetRef = (args.model?.AssetRef as string) ?? null;
-    this.Filename = args.db.resolveAssetFilename(this.AssetRef);
+    this.Filename = args.db.getAssetFilenameFromRef(this.AssetRef);
   }
 }

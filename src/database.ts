@@ -342,39 +342,6 @@ export class Database {
   }
 
   /**
-   * Returns the properties block of an object
-   * @param id Object ID
-   * @returns Property block. Will be automaticlly localized if required.
-   */
-  public getProperties<PropsType extends ArticyObjectProps>(
-    id: Id
-  ): PropsType | undefined {
-    const def = this._lookup.get(id);
-    if (!def) {
-      return undefined;
-    }
-
-    return this.localizeModel(def).Properties as PropsType;
-  }
-
-  /**
-   * Gets all property blocks for objects of a given type
-   * @param type Type name
-   * @returns Property blocks, all localized if applicable.
-   */
-  public getPropertiesOfType<PropsType extends ArticyObjectProps>(
-    type: string
-  ): PropsType[] {
-    const results: PropsType[] = [];
-    for (const [, model] of this._lookup) {
-      if (model.Type === type) {
-        results.push(this.localizeModel(model).Properties as PropsType);
-      }
-    }
-    return results;
-  }
-
-  /**
    * Loads an Articy Object into a given JS class by technical name (with type safety). Similar to [[getObject]] but uses the TechnicalName.
    * @param technicalName Technical name to search by
    * @param type Object type
@@ -464,6 +431,25 @@ export class Database {
     }
 
     return Database.RegisteredTypes.get(base.Class);
+  }
+
+  /**
+   * Returns the properties block of an object
+   * @typeParam PropType Properties block interface
+   * @typeParam TemplateType Template block interface
+   * @param id Object ID
+   * @returns Model
+   */
+  public getModel<
+    PropType extends ArticyObjectProps,
+    TemplateType extends TemplateProps = TemplateProps
+  >(id: Id): ModelData<PropType, TemplateType> | undefined {
+    const def = this._lookup.get(id);
+    if (!def) {
+      return undefined;
+    }
+
+    return this.localizeModel(def) as ModelData<PropType, TemplateType>;
   }
 
   /**
@@ -574,11 +560,11 @@ export class Database {
   }
 
   /**
-   * Returns the actual filename for an asset
+   * Resolves the full filename of an asset given its ID
    * @param assetId Asset Id
    * @returns Absolute path using the `assetResolver` passed into the database constructor.
    */
-  public getAssetFilename(assetId: Id | undefined): string | null {
+  public getAssetFilenameFromId(assetId: Id | undefined): string | null {
     if (!assetId) {
       return null;
     }
@@ -590,15 +576,15 @@ export class Database {
     }
 
     // Resolve
-    return this.resolveAssetFilename(def.AssetRef);
+    return this.getAssetFilenameFromRef(def.AssetRef);
   }
 
   /**
-   * Resolves the full filename of an asset given a ref
+   * Resolves the full filename of an asset given its reference name
    * @param assetRef Asset Reference
    * @returns Absolute path using the `assetResolver` passed into the database constructor
    */
-  public resolveAssetFilename(assetRef: string | undefined): string | null {
+  public getAssetFilenameFromRef(assetRef: string | undefined): string | null {
     if (!assetRef || !this._assetResolver) {
       return null;
     }

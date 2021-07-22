@@ -7,7 +7,7 @@ const mockDatabase = ({
   isOfType: () => {
     return false;
   },
-  getProperties: () => {
+  getModel: () => {
     return {};
   },
 } as unknown) as Database;

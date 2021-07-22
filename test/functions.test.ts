@@ -15,7 +15,7 @@ const mockDatabase = ({
   isOfType: () => {
     return false;
   },
-  getProperties: () => {
+  getModel: () => {
     return {};
   },
 } as unknown) as Database;
@@ -108,9 +108,9 @@ describe('Testing native functions', () => {
 
   // Mock database
   const db = ({
-    getProperties: (id: Id) => {
+    getModel: (id: Id) => {
       if (id === '0x1') {
-        return MyProps;
+        return { Properties: MyProps };
       }
       return undefined;
     },
