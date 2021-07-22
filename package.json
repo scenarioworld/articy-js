@@ -1,10 +1,10 @@
 {
   "version": "0.4.0-1",
   "license": "MIT",
-  "homepage": "https://github.com/brwarner/articy-node",
-  "bugs": "https://github.com/brwarner/articy-node/issues",
+  "homepage": "https://github.com/scenarioworld/articy-js",
+  "bugs": "https://github.com/scenarioworld/articy-js/issues",
   "repository": {
-    "url": "https://github.com/brwarner/articy-node",
+    "url": "https://github.com/scenarioworld/articy-js",
     "type": "git"
   },
   "main": "dist/index.js",
@@ -41,17 +41,17 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "articy-node",
+  "name": "articy-js",
   "author": "Brook Warner Jensen <brook@scenarioworld.ca>",
-  "description": "Loads and allows for navigation of exported Articy JSON data (http://www.articy.com)",
-  "module": "dist/articy-node.esm.js",
+  "description": "Articy (http://www.articy.com) runtime for Typescript/Javascript.",
+  "module": "dist/articy-js.esm.js",
   "size-limit": [
     {
-      "path": "dist/articy-node.cjs.production.min.js",
+      "path": "dist/articy-js.cjs.production.min.js",
       "limit": "15 KB"
     },
     {
-      "path": "dist/articy-node.esm.js",
+      "path": "dist/articy-js.esm.js",
       "limit": "15 KB"
     }
   ],

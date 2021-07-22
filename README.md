@@ -9,8 +9,8 @@ Note that while this package features full feature parity with the Unity plguin,
 Just install using `npm` or `yarn` and you're ready to go.
 
 ```
-yarn add articy-node
-npm install articy-node --save-dev
+yarn add articy-js
+npm install articy-js --save-dev
 ```
 
 ## Loading Data from Articy
@@ -34,7 +34,7 @@ If you're using Javscript modules, the best way to manage these instances is to 
 
 // Import data from the exported json
 import GameData from "./exported.articy.json";
-import { Database } from "articy-node";
+import { Database } from "articy-js";
 
 // Create a new database
 const GameDB = new Database(GameData)
@@ -57,7 +57,7 @@ To access an object, use the `getObject` method.
 
 ```typescript
 import GameDB from "GameDB";
-import { FlowFragment } from "articy-node";
+import { FlowFragment } from "articy-js";
 
 // Get a flow fragment by ID
 const fragment = GameDB.getObject("0x01000000000018A3", FlowFragment);
@@ -246,7 +246,7 @@ If you're using Typescript, you can type the `feature` argument to an interface 
 To support asset loading (such as images), just add an asset resolver function to the Database constructor. This method should, given an asset reference string in Articy return the assets filename. In webpack, this is easy.
 
 ```js
-import { Database } from "articy-node";
+import { Database } from "articy-js";
 
 // Import game data from json
 import GameData from "./game.articy.json";
@@ -284,7 +284,7 @@ Note that this class can't load `.xlsx` files directly. Instead, it requires a J
 Objects accessed via `getObject` will automatically have their properties localized to whatever the active language is. You can change the active language at any time using the Localization objects' `active` variable. This will automatically update the text in all loaded objects, meaning you don't have to worry about holding onto objects loaded via `getObject`.
 
 ```typescript
-import { Database } from "articy-node";
+import { Database } from "articy-js";
 
 // Import game data from json with localization turned on
 import GameData from "./game.articy.json";
