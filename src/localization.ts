@@ -1,4 +1,3 @@
-import Excel from 'exceljs';
 import {
   ArticyObjectProps,
   EnumDefinition,
@@ -11,11 +10,16 @@ import {
 type Language = Map<string, string>;
 
 /**
- * Responsible for loading and managing localization data from .xslx files exported alongside the Articy JSON.
+ * Responsible for managing localization data loaded from the `.xslx` files exported alongside the Articy JSON.
  *
  * This class is automatically instantiated when creating a [[Database]]. Simply use [[Database.localization]].
  *
- * Load new .xlsx files with [[load]] and set the active language with [[active]].
+ * Note that this class can't load `.xlsx` files directly. Instead, it requires
+ * a JSON object that maps localization IDs to strings. You can get this by loading the xlsx file
+ * yourself using a library like [xlsx](https://www.npmjs.com/package/xlsx) or [exceljs](https://www.npmjs.com/package/exceljs)
+ * or using our [articy-xlsx-loader](https://www.npmjs.com/package/articy-xlsx-loader) if you're using Webpack.
+ *
+ * Load the JSON data using [[load]] and set the active language with [[active]].
  *
  * The [[Database]] will automatically localize any objects returned by it using the [[active]] language, but you can also use [[get]] to manually localize a string.
  */
@@ -40,23 +44,21 @@ export class Localization {
   }
 
   /**
-   * Load a new langauge into the database
+   * Load a new langauge into the database.
+   *
+   * This method isn't capable of loading .xslx files directly. Instead, it requires
+   * a JSON object that maps localization IDs to strings. You can get this by loading the xlsx file
+   * yourself using a library like [xlsx](https://www.npmjs.com/package/xlsx) or [exceljs](https://www.npmjs.com/package/exceljs)
+   * or using our [articy-xlsx-loader](https://www.npmjs.com/package/articy-xlsx-loader) if you're using Webpack.
    * @param language Language name (ex. 'en')
-   * @param filename File to load
+   * @param data Loaded localization data from an xlsx file.
    */
-  public async load(language: string, filename: string) {
-    // Load workbook
-    const workbook = new Excel.Workbook();
-    await workbook.xlsx.readFile(filename);
-
-    // Load worksheet
-    const stringWorksheet = workbook.getWorksheet('ArticyStrings');
-
+  public load(language: string, data: Record<string, string>) {
     // Create language map
     const map = new Map<string, string>();
-    stringWorksheet.getColumn(1).eachCell((cell, row) => {
-      map.set(cell.text, stringWorksheet.getCell(row, cell.col + 1).text);
-    });
+    for (const key in data) {
+      map.set(key, data[key]);
+    }
 
     // Save
     this.languages.set(language, map);

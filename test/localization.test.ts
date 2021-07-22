@@ -1,5 +1,6 @@
 import { Database } from '../src/database';
 import { FlowFragment } from '../src/flowTypes';
+import Excel from 'exceljs';
 import {
   ArticyData,
   ArticyObjectProps,
@@ -14,6 +15,28 @@ import { LocalizeDefinition, LocalizeProperties } from '../src/localization';
 
 // Raw database JSON
 const UnitData: ArticyData = require('./unit.articy.json');
+
+// XLSX loader
+async function loadXlsx(filename: string): Promise<Record<string, string>> {
+  // Load workbook
+  const workbook = new Excel.Workbook();
+  await workbook.xlsx.readFile(filename);
+
+  // Get the appropriate worksheet
+  const stringWorksheet = workbook.getWorksheet('ArticyStrings');
+
+  // Create language map from rows
+  const localizationMap: Record<string, string> = {};
+  stringWorksheet.getColumn(1).eachCell((cell, row) => {
+    localizationMap[cell.text] = stringWorksheet.getCell(
+      row,
+      cell.col + 1
+    ).text;
+  });
+
+  // Return
+  return localizationMap;
+}
 
 const myTemplateDefinition: TemplateTypeDefinition = {
   Class: 'DialogueFragment',
@@ -57,11 +80,13 @@ describe('A project with two languages: French and English', () => {
   const database = new Database(UnitData as ArticyData);
 
   beforeAll(async () => {
-    // Load english language
-    await database.localization.load('en', './test/loc_All objects_en.xlsx');
+    // Load languages
+    const en = await loadXlsx('./test/loc_All objects_en.xlsx');
+    const fr = await loadXlsx('./test/loc_All objects_fr.xlsx');
 
-    // Load french language
-    await database.localization.load('fr', './test/loc_All objects_fr.xlsx');
+    // Store in localization file
+    database.localization.load('en', en);
+    database.localization.load('fr', fr);
   });
 
   beforeEach(() => {

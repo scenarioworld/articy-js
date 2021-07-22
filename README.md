@@ -277,7 +277,9 @@ const assetFilename = GameDB.getAssetFilename(entity.properties.PreviewImage.Ass
 
 ## Localization
 
-This package supports Articy's localization system. When loading a project with localization turned on, you'll use the `localization` object within the `Database` class to load the .xlsx files that have your game's localized text.
+This package supports Articy's localization system. When loading a project with localization turned on, you'll use the `localization` object within the `Database` class to load and manage your game's localized text.
+
+Note that this class can't load `.xlsx` files directly. Instead, it requires a JSON object that maps localization IDs to strings. You can get this by loading the xlsx file yourself using a library like [xlsx](https://www.npmjs.com/package/xlsx) or [exceljs](https://www.npmjs.com/package/exceljs) or using our [articy-xlsx-loader](https://www.npmjs.com/package/articy-xlsx-loader) if you're using Webpack.
 
 Objects accessed via `getObject` will automatically have their properties localized to whatever the active language is. You can change the active language at any time using the Localization objects' `active` variable. This will automatically update the text in all loaded objects, meaning you don't have to worry about holding onto objects loaded via `getObject`.
 
@@ -290,9 +292,9 @@ import GameData from "./game.articy.json";
 // Create database
 const GameDB = new Database(GameData as ArticyData);
 
-// Load the localizations
-GameDB.localization.load('en', './loc_All objects_en.xlsx');
-GameDB.localization.load('fr', './loc_All objects_fr.xlsx');
+// Load the localizations. Uses [articy-xlsx-loader](https://www.npmjs.com/package/articy-xlsx-loader) to parse these .xlsx files into JSON objects mapping localization IDs to strings.
+GameDB.localization.load('en', require('./loc_All objects_en.xlsx'));
+GameDB.localization.load('fr', require('./loc_All objects_fr.xlsx'));
 
 // Set French as the active language
 GameDB.localization.active = 'fr';
