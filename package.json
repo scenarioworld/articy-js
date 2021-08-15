@@ -62,7 +62,7 @@
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "exceljs": "^4.2.1",
-    "husky": "^4.3.0",
+    "husky": "^7.0.1",
     "peggy": "^1.2.0",
     "size-limit": "^4.9.0",
     "ts-pegjs": "^1.1.1",
