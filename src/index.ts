@@ -46,6 +46,17 @@ export {
 } from './iterator';
 
 export {
+  initializeGlobals,
+  startupGameFlowStateWithGlobals,
+  advanceGameFlowStateWithGlobals,
+  mergeGameFlowStateWithGlobals,
+  refreshBranchesWithGlobals,
+  completeFlowWithGlobals,
+  Globals,
+  SlimGameFlowState,
+} from './iteratorWithGlobals';
+
+export {
   runScript,
   RegisterScriptFunction,
   RegisterFeatureExecutionHandler,
