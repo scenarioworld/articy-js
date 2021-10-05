@@ -54,6 +54,8 @@ export {
   completeFlowWithGlobals,
   Globals,
   SlimGameFlowState,
+  NullGlobals,
+  NullSlimGameFlowState,
 } from './iteratorWithGlobals';
 
 export {

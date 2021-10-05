@@ -15,7 +15,24 @@ type GlobalKeys = 'variables' | 'visits' | 'turn';
 
 export type Globals = Pick<GameFlowState, GlobalKeys>;
 
+/** Empty globals state */
+export const NullGlobals: Globals = {
+  variables: {},
+  visits: { counts: {}, indicies: {} },
+  turn: -1,
+};
+
 export type SlimGameFlowState = Omit<GameFlowState, GlobalKeys>;
+
+/** Empty slim game flow state */
+export const NullSlimGameFlowState: SlimGameFlowState = {
+  pages: [],
+  mergePages: [],
+  branches: [],
+  id: null,
+  last: null,
+  terminalBranch: undefined,
+};
 
 type GlobalsIterationResult = [
   Globals,
@@ -98,7 +115,7 @@ export function advanceGameFlowStateWithGlobals(
 export function mergeGameFlowStateWithGlobals(
   globals: Globals,
   db: Database,
-  state: GameFlowState,
+  state: SlimGameFlowState,
   config: GameIterationConfig,
   start: Id
 ): [Globals, SlimGameFlowState] {
@@ -122,7 +139,7 @@ export function mergeGameFlowStateWithGlobals(
 export function refreshBranchesWithGlobals(
   globals: Globals,
   db: Database,
-  state: GameFlowState,
+  state: SlimGameFlowState,
   config: GameIterationConfig
 ): [Globals, SlimGameFlowState] {
   const newState = refreshBranches(db, { ...state, ...globals }, config);
@@ -140,7 +157,7 @@ export function refreshBranchesWithGlobals(
 export function completeFlowWithGlobals(
   globals: Globals,
   db: Database,
-  state: GameFlowState
+  state: SlimGameFlowState
 ): [Globals, SlimGameFlowState] {
   const newState = completeFlow(db, { ...state, ...globals });
   const [glob, split] = SplitGlobals([newState, undefined]);
