@@ -347,6 +347,7 @@ type MaybeSpeaker = { Speaker?: Id } & ArticyObjectProps;
  * @param caller Id of the node calling this function
  * @param db Database
  * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @param stateContext If set, override the state context past to functions
  */
 export function runScript(
   script: string | undefined,
@@ -355,7 +356,8 @@ export function runScript(
   caller: Id,
   db: Database,
   returns: false,
-  shadowing: boolean
+  shadowing: boolean,
+  stateContext?: Readonly<ApplicationState>
 ): void;
 
 /**
@@ -366,6 +368,7 @@ export function runScript(
  * @param caller Id of the node calling this function
  * @param db Database
  * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @param stateContext If set, override the state context past to functions
  * @returns If the return value of the script is truthy
  */
 export function runScript(
@@ -375,7 +378,8 @@ export function runScript(
   caller: Id,
   db: Database,
   returns: true | 'boolean',
-  shadowing: boolean
+  shadowing: boolean,
+  stateContext?: Readonly<ApplicationState>
 ): boolean;
 
 /**
@@ -386,6 +390,7 @@ export function runScript(
  * @param caller Id of the node calling this function
  * @param db Database
  * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @param stateContext If set, override the state context past to functions
  * @returns The string return value of the script, or "" if it is not a string
  */
 export function runScript(
@@ -395,7 +400,8 @@ export function runScript(
   caller: Id,
   db: Database,
   returns: 'string',
-  shadowing: boolean
+  shadowing: boolean,
+  stateContext?: Readonly<ApplicationState>
 ): string;
 
 /**
@@ -406,6 +412,7 @@ export function runScript(
  * @param caller Id of the node calling this function
  * @param db Database
  * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @param stateContext If set, override the state context past to functions
  * @returns The numerical return value of the script, or 0 if it is not a number
  */
 export function runScript(
@@ -415,7 +422,8 @@ export function runScript(
   caller: Id,
   db: Database,
   returns: 'number',
-  shadowing: boolean
+  shadowing: boolean,
+  stateContext?: Readonly<ApplicationState>
 ): number;
 
 /**
@@ -426,6 +434,7 @@ export function runScript(
  * @param caller Id of the node calling this function
  * @param db Database
  * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @param stateContext If set, override the state context past to functions
  * @returns The raw result of the script executed (be it a string, number, boolean, or something else)
  */
 export function runScript(
@@ -435,7 +444,8 @@ export function runScript(
   caller: Id,
   db: Database,
   returns: 'any',
-  shadowing: boolean
+  shadowing: boolean,
+  stateContext?: Readonly<ApplicationState>
 ): boolean | void | string | number;
 
 export function runScript(
@@ -445,7 +455,8 @@ export function runScript(
   caller: Id,
   db: Database,
   returns: boolean | 'string' | 'number' | 'boolean' | 'any',
-  shadowing: boolean
+  shadowing: boolean,
+  stateContext?: Readonly<ApplicationState>
 ): boolean | void | string | number {
   // No script? Return true.
   if (!script || script === '') {
@@ -483,7 +494,7 @@ export function runScript(
     db,
     variables,
     visits,
-    state,
+    state: stateContext ?? state,
   };
 
   // Figure out speaker variable
