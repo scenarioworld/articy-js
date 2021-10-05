@@ -339,15 +339,114 @@ function scrubComments(script: string): string {
 
 type MaybeSpeaker = { Speaker?: Id } & ArticyObjectProps;
 
-export function runScriptRaw(
+/**
+ * Runs a condition or instruction script
+ * @param script Script to run
+ * @param variables Global variable store
+ * @param visits Visit set information
+ * @param caller Id of the node calling this function
+ * @param db Database
+ * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ */
+export function runScript(
   script: string | undefined,
   variables: VariableStore,
   visits: VisitSet,
   caller: Id,
   db: Database,
-  returns: boolean,
+  returns: false,
   shadowing: boolean
-) {
+): void;
+
+/**
+ * Runs a condition or instruction script
+ * @param script Script to run
+ * @param variables Global variable store
+ * @param visits Visit set information
+ * @param caller Id of the node calling this function
+ * @param db Database
+ * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @returns If the return value of the script is truthy
+ */
+export function runScript(
+  script: string | undefined,
+  variables: VariableStore,
+  visits: VisitSet,
+  caller: Id,
+  db: Database,
+  returns: true | 'boolean',
+  shadowing: boolean
+): boolean;
+
+/**
+ * Runs a condition or instruction script
+ * @param script Script to run
+ * @param variables Global variable store
+ * @param visits Visit set information
+ * @param caller Id of the node calling this function
+ * @param db Database
+ * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @returns The string return value of the script, or "" if it is not a string
+ */
+export function runScript(
+  script: string | undefined,
+  variables: VariableStore,
+  visits: VisitSet,
+  caller: Id,
+  db: Database,
+  returns: 'string',
+  shadowing: boolean
+): string;
+
+/**
+ * Runs a condition or instruction script
+ * @param script Script to run
+ * @param variables Global variable store
+ * @param visits Visit set information
+ * @param caller Id of the node calling this function
+ * @param db Database
+ * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @returns The numerical return value of the script, or 0 if it is not a number
+ */
+export function runScript(
+  script: string | undefined,
+  variables: VariableStore,
+  visits: VisitSet,
+  caller: Id,
+  db: Database,
+  returns: 'number',
+  shadowing: boolean
+): number;
+
+/**
+ * Runs a condition or instruction script
+ * @param script Script to run
+ * @param variables Global variable store
+ * @param visits Visit set information
+ * @param caller Id of the node calling this function
+ * @param db Database
+ * @param returns If true, expect a boolean return. Otherwise void or a specific type like string or number.
+ * @returns The raw result of the script executed (be it a string, number, boolean, or something else)
+ */
+export function runScript(
+  script: string | undefined,
+  variables: VariableStore,
+  visits: VisitSet,
+  caller: Id,
+  db: Database,
+  returns: 'any',
+  shadowing: boolean
+): boolean | void | string | number;
+
+export function runScript(
+  script: string | undefined,
+  variables: VariableStore,
+  visits: VisitSet,
+  caller: Id,
+  db: Database,
+  returns: boolean | 'string' | 'number' | 'boolean' | 'any',
+  shadowing: boolean
+): boolean | void | string | number {
   // No script? Return true.
   if (!script || script === '') {
     return true;
@@ -392,7 +491,7 @@ export function runScriptRaw(
     ?.Speaker;
 
   // Call the function with the variable sets
-  return func.call(
+  const result = func.call(
     undefined,
     undefined,
     caller,
@@ -402,38 +501,37 @@ export function runScriptRaw(
       wrapScriptFunction(registeredFunctions[f], context, shadowing)
     )
   );
-}
 
-/**
- * Runs a condition or instruction script
- * @param script Script to run
- * @param variables Global variable store
- * @param visits Visit set information
- * @param caller Id of the node calling this function
- * @param db Database
- * @param returns Is this script expected to return a boolean?
- * @returns Whether the script returned a truthy value.
- */
-export function runScript(
-  script: string | undefined,
-  variables: VariableStore,
-  visits: VisitSet,
-  caller: Id,
-  db: Database,
-  returns: boolean,
-  shadowing: boolean
-): boolean {
-  // Run script and get raw result
-  const result = runScriptRaw(
-    script,
-    variables,
-    visits,
-    caller,
-    db,
-    returns,
-    shadowing
-  );
+  // Boolean return
+  if (returns === 'boolean' || returns === true) {
+    return result === true;
+  }
 
-  // Evaluate as boolean
-  return result === true;
+  // String return
+  if (returns === 'string') {
+    if (typeof result === 'string') {
+      return result;
+    }
+    return '';
+  }
+
+  // Numerical return
+  if (returns === 'number') {
+    if (typeof result === 'number') {
+      return result;
+    }
+    return 0;
+  }
+
+  // If any, return if it's a number, boolean, or string
+  if (returns === 'any') {
+    switch (typeof result) {
+      case 'number':
+      case 'boolean':
+      case 'string':
+        return result;
+    }
+  }
+
+  // Otherwise, void result
 }
