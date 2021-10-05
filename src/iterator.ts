@@ -493,7 +493,7 @@ export function startupGameFlowState(
   db: Database,
   start: Id,
   config: GameIterationConfig,
-  existing?: GameFlowState
+  existing?: Pick<GameFlowState, 'variables' | 'visits' | 'turn'>
 ): GameIterationResult {
   // Create initial state
   let initial: GameFlowState = {

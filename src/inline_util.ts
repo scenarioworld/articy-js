@@ -2,7 +2,7 @@ import { Database } from './database';
 import { IParseOptions, IFileRange } from './inline_peggy';
 import { ExecuteContext } from './flowTypes';
 import { Id } from './json';
-import { runScript, runScriptRaw } from './script';
+import { runScript } from './script';
 
 export enum SequenceType {
   Stopping,
@@ -37,13 +37,13 @@ export function processEmbed(
 
   // SPECIAL CASE: If this is a stopping list with no alternates, evaluate it as a print
   if (type === null && alternatives.length === 1 && !multiline) {
-    const evaluated = runScriptRaw(
+    const evaluated = runScript(
       alternatives[0].full,
       options.context.variables,
       context.visits,
       caller,
       db,
-      true,
+      'any',
       false
     );
     return `${evaluated}`;
