@@ -3,7 +3,7 @@
 ## 1.2.0
 
 ### Breaking Changes
-- `RegisterFeatureExecutionHandler` and `RegisterTemplateExecutionHandler` now take a new mandatory property: a unique string id. This prevents handlers from being reregistered in projects using webpack where hot reloads may re-execute individual modules.
+- `RegisterFeatureExecutionHandler` and `RegisterTemplateExecutionHandler` now take a new mandatory property: a unique string id. This prevents handlers from being reregistered in projects using webpack where hot reloads may re-execute individual modules [#50](https://github.com/scenarioworld/articy-js/pull/50).
 
 
 ## 1.1.0
