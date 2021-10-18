@@ -265,8 +265,13 @@ export function RegisterFeatureExecutionHandler<Feature extends FeatureProps>(
   featureIds.set(id, handler as FeatureExecutionHandler);
 }
 
-export function RunFeatureHandlers(name: string, feature: FeatureProps, db: Database, node: BaseFlowNode, state: GameFlowState)
-{
+export function RunFeatureHandlers(
+  name: string,
+  feature: FeatureProps,
+  db: Database,
+  node: BaseFlowNode,
+  state: GameFlowState
+) {
   // Check if we have a handler for that feature
   const handlers = featureHandlers.get(name);
   if (!handlers) {
@@ -322,8 +327,13 @@ export function RegisterTemplateExecutionHandler<
   templateIds.set(id, handler as TemplateExecutionHandler);
 }
 
-export function RunTemplateHandlers(type: string, template: TemplateProps, db: Database, node: BaseFlowNode, state: GameFlowState)
-{
+export function RunTemplateHandlers(
+  type: string,
+  template: TemplateProps,
+  db: Database,
+  node: BaseFlowNode,
+  state: GameFlowState
+) {
   // Check its template
   const myTemplateHandlers = templateHandlers.get(type);
   if (myTemplateHandlers) {
