@@ -237,6 +237,7 @@ const featureIds: Map<string, FeatureExecutionHandler> = new Map();
 /**
  * Registers a handler function called whenever a node with a given feature is executed in [[advanceGameFlowState]].
  * @param name Technical name of the feature
+ * @param id Unique ID that prevents this handler from being registered twice
  * @param handler Function to call
  */
 export function RegisterFeatureExecutionHandler<Feature extends FeatureProps>(
@@ -301,6 +302,7 @@ const templateIds: Map<string, TemplateExecutionHandler> = new Map();
 /**
  * Registers a handler function called whenever a node with a given template is executed in [[advanceGameFlowState]].
  * @param name Template technical name
+ * @param id Unique ID that prevents this handler from being registered twice
  * @param handler Function to call
  */
 export function RegisterTemplateExecutionHandler<
