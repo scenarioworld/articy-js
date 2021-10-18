@@ -159,7 +159,7 @@ We can do this by registering Template or Feature Execution handlers. These are 
  * We want to run some special music code whenever any node with that feature is executed as part of iteration.
  * This will work even if the node in question is not "stopped at" in iteration, and just passed over.
 */
-RegisterFeatureExecutionHandler("MusicSettings", (db, feature, node, state) => {
+RegisterFeatureExecutionHandler("MusicSettings", "MyMusicSettingsHandler", (db, feature, node, state) => {
     const musicToPlay = feature.SongName;
     // do something with musicToPlay
     alert("Now playing:" + musicToPlay);

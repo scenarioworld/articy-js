@@ -232,20 +232,59 @@ type FeatureExecutionHandler<Feature extends FeatureProps = FeatureProps> = (
   state: GameFlowState
 ) => Variable | void | ScriptGenerator;
 const featureHandlers: Map<string, FeatureExecutionHandler[]> = new Map();
+const featureIds: Map<string, FeatureExecutionHandler> = new Map();
 
 /**
  * Registers a handler function called whenever a node with a given feature is executed in [[advanceGameFlowState]].
  * @param name Technical name of the feature
+ * @param id Unique ID that prevents this handler from being registered twice
  * @param handler Function to call
  */
 export function RegisterFeatureExecutionHandler<Feature extends FeatureProps>(
   name: string,
+  id: string,
   handler: FeatureExecutionHandler<Feature>
 ): void {
   if (!featureHandlers.has(name)) {
     featureHandlers.set(name, [handler as FeatureExecutionHandler]);
   } else {
     featureHandlers.get(name)?.push(handler as FeatureExecutionHandler);
+  }
+
+  // Check if we already have this unique ID registered
+  if (featureIds.has(id)) {
+    const handlers = featureHandlers.get(name)!;
+
+    // If so, find the old value and splice it out
+    const index = handlers.indexOf(featureIds.get(id)!);
+    if (index !== -1) {
+      handlers.splice(index, 1);
+    }
+  }
+
+  // Set this handler as this unique id
+  featureIds.set(id, handler as FeatureExecutionHandler);
+}
+
+export function RunFeatureHandlers(
+  name: string,
+  feature: FeatureProps,
+  db: Database,
+  node: BaseFlowNode,
+  state: GameFlowState
+) {
+  // Check if we have a handler for that feature
+  const handlers = featureHandlers.get(name);
+  if (!handlers) {
+    return;
+  }
+
+  // If so, run handlers
+  for (const handler of handlers) {
+    const returnValue = handler(db, feature, node, state);
+    if (typeof returnValue === 'object') {
+      queueGeneratedActions(returnValue, false);
+    }
   }
 }
 
@@ -258,19 +297,55 @@ type TemplateExecutionHandler<
   state: GameFlowState
 ) => Variable | void | ScriptGenerator;
 const templateHandlers: Map<string, TemplateExecutionHandler[]> = new Map();
+const templateIds: Map<string, TemplateExecutionHandler> = new Map();
 
 /**
  * Registers a handler function called whenever a node with a given template is executed in [[advanceGameFlowState]].
  * @param name Template technical name
+ * @param id Unique ID that prevents this handler from being registered twice
  * @param handler Function to call
  */
 export function RegisterTemplateExecutionHandler<
   Template extends TemplateProps
->(name: string, handler: TemplateExecutionHandler<Template>): void {
+>(name: string, id: string, handler: TemplateExecutionHandler<Template>): void {
   if (!templateHandlers.has(name)) {
     templateHandlers.set(name, [handler as TemplateExecutionHandler]);
   } else {
     templateHandlers.get(name)?.push(handler as TemplateExecutionHandler);
+  }
+
+  // Check if we already have this unique ID registered
+  if (templateIds.has(id)) {
+    const handlers = templateHandlers.get(name)!;
+
+    // If so, find the old value and splice it out
+    const index = handlers.indexOf(templateIds.get(id)!);
+    if (index !== -1) {
+      handlers.splice(index, 1);
+    }
+  }
+
+  // Set this handler as this unique id
+  templateIds.set(id, handler as TemplateExecutionHandler);
+}
+
+export function RunTemplateHandlers(
+  type: string,
+  template: TemplateProps,
+  db: Database,
+  node: BaseFlowNode,
+  state: GameFlowState
+) {
+  // Check its template
+  const myTemplateHandlers = templateHandlers.get(type);
+  if (myTemplateHandlers) {
+    // Iterate handlers
+    for (const handler of myTemplateHandlers) {
+      const returnValue = handler(db, template, node, state);
+      if (typeof returnValue === 'object') {
+        queueGeneratedActions(returnValue, false);
+      }
+    }
   }
 }
 
@@ -287,35 +362,13 @@ export function OnNodeExecution(
     return;
   }
 
-  // Iterate all its features
+  // Iterate all its features and run handlers
   for (const key of Object.keys(node.template ?? {})) {
-    // Check if we have a handler for that feature
-    const handlers = featureHandlers.get(key);
-    if (!handlers) {
-      continue;
-    }
-
-    // If so, run handlers
-    const feature = node.template[key];
-    for (const handler of handlers) {
-      const returnValue = handler(node.db, feature, node, state);
-      if (typeof returnValue === 'object') {
-        queueGeneratedActions(returnValue, false);
-      }
-    }
+    RunFeatureHandlers(key, node.template[key], node.db, node, state);
   }
 
-  // Check its template
-  const myTemplateHandlers = templateHandlers.get(node.type);
-  if (myTemplateHandlers) {
-    // Iterate handlers
-    for (const handler of myTemplateHandlers) {
-      const returnValue = handler(node.db, node.template, node, state);
-      if (typeof returnValue === 'object') {
-        queueGeneratedActions(returnValue, false);
-      }
-    }
-  }
+  // Run template handlers
+  RunTemplateHandlers(node.type, node.template, node.db, node, state);
 }
 
 /**
