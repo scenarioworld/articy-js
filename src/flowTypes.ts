@@ -229,6 +229,18 @@ export class InputPin extends BasePin {
     // Otherwise always 1: returning to our owner
     return 1;
   }
+
+  execute(context: ExecuteContext): void {
+    runScript(
+      this.properties.Text,
+      context.variables,
+      context.visits,
+      this.id,
+      this.db,
+      true,
+      false
+    );
+  }
 }
 
 /**
@@ -320,6 +332,19 @@ export class Condition<
   // Always one branch. True or False.
   numBranches(): number {
     return 1;
+  }
+
+  // Execute in case of side effects
+  execute(context: ExecuteContext): void {
+    runScript(
+      this.properties.Expression,
+      context.variables,
+      context.visits,
+      this.id,
+      this.db,
+      true,
+      false
+    );
   }
 }
 
