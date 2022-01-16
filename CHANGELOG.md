@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.2
+
+- Expose loaded project information [#80](https://github.com/scenarioworld/articy-js/pull/80).
+
+## 1.2.1
+
+- Make sure input pins and conditions are executed when advancing (originally they were only run as part of the branch searching and thus changes were not committed to state). [#76](https://github.com/scenarioworld/articy-js/pull/76).
+
 ## 1.2.0
 
 ### Breaking Changes
