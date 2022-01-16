@@ -20,6 +20,7 @@ import {
   LocalizeDefinition,
   LocalizeProperties,
 } from './localization';
+import { Project } from '.';
 
 // Resolve an asset to a real path
 type ResolveAssetPath = (assetRef: string) => string | null | undefined;
@@ -137,6 +138,13 @@ export class Database {
 
     // Track localization
     this._isLocalized = this._data.Settings.set_Localization === 'True';
+  }
+
+  /**
+   * Gets information about the loaded project (name, guid, etc.)
+   */
+  public get project(): Project {
+    return this._data.Project;
   }
 
   private processHierarchy(entry: HierarchyEntry): void {
