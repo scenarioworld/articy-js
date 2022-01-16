@@ -143,7 +143,7 @@ export class Database {
   /**
    * Gets information about the loaded project (name, guid, etc.)
    */
-  public get project(): Project { 
+  public get project(): Project {
     return this._data.Project;
   }
 
