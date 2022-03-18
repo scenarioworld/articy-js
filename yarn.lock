@@ -8243,11 +8243,9 @@ ts-jest@^25.3.1:
     yargs-parser "18.x"
 
 ts-pegjs@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/ts-pegjs/-/ts-pegjs-1.1.1.tgz#992d722322d2fd3fe382cb4a830752607eb9172b"
-  integrity sha512-8mjctiNMY0q0YyLAykkaxZnKo6Y3LDL7ncpvrWZsdqO9ZwykUYDsYQmSOAvKXOs5l6FmQsbzMJkRCP49aj59xQ==
-  dependencies:
-    peggy "^1.2.0"
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/ts-pegjs/-/ts-pegjs-1.2.2.tgz#c990149c48a63e32525784caa4745deb25f083f2"
+  integrity sha512-nzxDbdHHKvYjfW05CBN8wvVXjx1+7uHg/aRiujcMNwUfdIaXzJ7Guw5gNI62scv7H2ymn2iHHZseDBIuO+B8gA==
 
 ts-pnp@^1.1.6:
   version "1.2.0"
