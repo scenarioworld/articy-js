@@ -3,6 +3,7 @@ import {
   LocationImageProps,
   LocationLinkProps,
   LocationProps,
+  SpotProps,
   TemplateProps,
   ZoneProps,
 } from './json';
@@ -16,7 +17,7 @@ import { ArticyCreatorArguments } from './object';
 @ArticyType('Location')
 export class Location<
   TemplateType extends TemplateProps = TemplateProps
-> extends ArticyObject<LocationProps, TemplateType> {}
+> extends ArticyObject<LocationProps, TemplateType> { }
 
 /**
  * Articy location zones (and zone like objects)
@@ -25,7 +26,7 @@ export class Location<
 export class Zone<
   TemplateType extends TemplateProps = TemplateProps,
   PropertiesType extends ZoneProps = ZoneProps
-> extends ArticyObject<PropertiesType, TemplateType> {}
+> extends ArticyObject<PropertiesType, TemplateType> { }
 
 /**
  * Image in a location
@@ -33,7 +34,7 @@ export class Zone<
 @ArticyType('LocationImage')
 export class LocationImage<
   TemplateType extends TemplateProps = TemplateProps
-> extends Zone<TemplateType, LocationImageProps> {}
+> extends Zone<TemplateType, LocationImageProps> { }
 
 /**
  * Link in a location
@@ -52,3 +53,9 @@ export class LocationLink<
     this.Target = args.db.getObject(this.properties.Target, ArticyObject);
   }
 }
+
+/** Spot in a Location */
+@ArticyType('Spot')
+export class LocationSpot<
+  TemplateType extends TemplateProps = TemplateProps
+> extends ArticyObject<SpotProps, TemplateType> { }

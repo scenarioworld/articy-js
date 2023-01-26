@@ -68,6 +68,9 @@ export interface ColorData {
 
   /** Blue component */
   b: number;
+
+  /** Alpha component */
+  a?: number;
 }
 
 /** Size data */
@@ -112,10 +115,10 @@ export interface PreviewImageProps {
 /** Base export interface for all entity definitions */
 export interface EntityProps
   extends ArticyObjectProps,
-    DisplayNameProps,
-    ColorProps,
-    PreviewImageProps,
-    TextProps {}
+  DisplayNameProps,
+  ColorProps,
+  PreviewImageProps,
+  TextProps { }
 
 /** Base export interface for all flow objects (dialogue fragments, conditions, etc.) */
 export interface FlowObjectProps extends ArticyObjectProps {
@@ -177,15 +180,15 @@ export interface PinnedObjectProps extends FlowObjectProps {
 /** Base export interface for all hub flow node properties */
 export interface HubProps
   extends PinnedObjectProps,
-    DisplayNameProps,
-    TextProps {}
+  DisplayNameProps,
+  TextProps { }
 
 /** Base export interface for all flow fragments */
 export interface FlowFragmentProps
   extends PinnedObjectProps,
-    TextProps,
-    DisplayNameProps,
-    PreviewImageProps {
+  TextProps,
+  DisplayNameProps,
+  PreviewImageProps {
   TechnicalName: string;
   Attachments: Id[];
 }
@@ -193,9 +196,9 @@ export interface FlowFragmentProps
 /** Base export interface for all flow fragments */
 export interface DialogueProps
   extends PinnedObjectProps,
-    TextProps,
-    DisplayNameProps,
-    PreviewImageProps {
+  TextProps,
+  DisplayNameProps,
+  PreviewImageProps {
   TechnicalName: string;
   Attachments: Id[];
 }
@@ -218,8 +221,8 @@ export interface JumpProps extends PinnedObjectProps {
 /** Interface for dialogue fragments */
 export interface DialogueFragmentProps
   extends PinnedObjectProps,
-    TextProps,
-    MenuTextProps {
+  TextProps,
+  MenuTextProps {
   /** Id of speaker entity */
   Speaker: Id;
 }
@@ -230,7 +233,7 @@ export type FeatureProps = {};
 /**
  * Extend this in your application to add type handling for features used across many templates.
  */
-export interface GlobalFeatures {}
+export interface GlobalFeatures { }
 
 /** Properties for a template */
 export interface TemplateProps {
@@ -241,9 +244,9 @@ export interface TemplateProps {
 /** Properties for a location */
 export interface LocationProps
   extends ArticyObjectProps,
-    TextProps,
-    DisplayNameProps,
-    ColorProps {
+  TextProps,
+  DisplayNameProps,
+  ColorProps {
   /** Bounding box enclosing all elements in the location */
   Size: SizeData;
 }
@@ -259,12 +262,37 @@ enum ShapeType {
   Link = 6,
 }
 
+/** Types of outline style for location objects */
+enum OutlineStyles {
+  Solid = 0,
+  Dot = 1,
+  Dash = 2,
+  DashDot = 3,
+  DashDotDot = 4,
+}
+
+/** Types of selectability for a location object */
+enum SelectabilityModes {
+  Unselectable = 0,
+  Selectable = 1,
+}
+
+/** Outline properties */
+interface OutlineProps {
+  /** stroke color rgba */
+  OutlineColor: ColorData;
+  /** stroke size in pixels */
+  OutlineSize: number;
+  /** stroke style */
+  OutlineStyle: OutlineStyles
+}
+
 /** Properties for a zone in a location */
 export interface ZoneProps
   extends ArticyObjectProps,
-    TextProps,
-    ColorProps,
-    DisplayNameProps {
+  TextProps,
+  ColorProps,
+  DisplayNameProps {
   /** Preview image (appears to be the same as ImageAsset) */
   PreviewImage: PreviewImageData;
 
@@ -294,6 +322,35 @@ export interface LocationLinkProps extends ArticyObjectProps, ColorProps {
 
   /** Link target */
   Target: Id;
+}
+
+/** Properties for a spot placed in a location */
+export interface SpotProps extends ArticyObjectProps,
+  ColorProps,
+  TextProps,
+  OutlineProps,
+  DisplayNameProps,
+  PreviewImageProps {
+
+  /** Position of the spot in the location */
+  Position: PointData;
+
+  /** z-index of the spot */
+  ZIndex: number;
+
+  /** Bounding box of this element */
+  Size: SizeData;
+
+  ShowDisplayName: boolean;
+
+  DropShadow: boolean;
+
+  Selectability: SelectabilityModes;
+  
+  /** the size in pixels on the map */
+  DisplayNameSize: number;
+
+  DisplayNameColor: ColorData;
 }
 
 /** Properties for an asset */

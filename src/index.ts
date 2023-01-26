@@ -18,7 +18,7 @@ export {
   Condition,
   BasePinnedObject,
 } from './flowTypes';
-export { Location, Zone, LocationImage, LocationLink } from './locationTypes';
+export { Location, LocationSpot, Zone, LocationImage, LocationLink } from './locationTypes';
 
 export { Variable, VariableNamespace, VariableStore } from './variables';
 export {
